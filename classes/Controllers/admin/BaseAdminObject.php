@@ -48,9 +48,13 @@ class BaseAdminObject extends BaseAdminSecurity
                         $class = $this->loadClass($field['source']);
                         $table = $this->getClassField($class, 'table');
 
-                        $select = $this->_adminModel
-                            ->select($table)
-                            ->fetchAll();
+                        if (!empty($table)) {
+                            $select = $this->_adminModel
+                                ->select($table)
+                                ->fetchAll();
+                        } else {
+                            $select = $this->getClassField($class, 'values');
+                        }
                     } else {
                         $select = $field['values'];
                     }
@@ -76,7 +80,7 @@ class BaseAdminObject extends BaseAdminSecurity
               ->where("{$this->identity} = $id")
               ->fetchAll();
         }
-		
+
 		$this->assignSelectFields();
 
         //print_r($this->fields);echo "<br>";

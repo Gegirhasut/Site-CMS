@@ -184,7 +184,7 @@ class AdminBase_m extends BaseModel
 		
         foreach ($fields as $name => $field) {
         	if (isset($field['value'])) {
-	        	$fields .= $name . ",";
+                $fieldsValue .= $name . ",";
 	        	if ($field['value'] == "NULL") {
 	        	    $values .= "{$field['value']},";
 	        	} else {

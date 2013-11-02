@@ -23,12 +23,23 @@ class Car {
             'identity' => 'u_id',
             'filter' => 1
         ),
+
+        'year' => array('type' => 'text', 'title' => 'year'),
+        'price' => array('type' => 'text', 'title' => 'price'),
+        'kuzov' => array('type' => 'text', 'title' => 'kuzov'),
+        'engine' => array('type' => 'text', 'title' => 'engine'),
+        'power' => array('type' => 'text', 'title' => 'power'),
+        'kpp' => array('type' => 'text', 'title' => 'kpp'),
+        'privod' => array('type' => 'text', 'title' => 'privod'),
+        'color' => array('type' => 'text', 'title' => 'color'),
+
         /*'info' => array (
             'type' => 'subtable',
             'table' => 'cr_cars_info',
             'join' => 'car_id',
             'identity' => 'i_id'
         ),*/
+
         /*'year' => array(
             'type' => 'select',
             'range' => true,
@@ -39,8 +50,8 @@ class Car {
             ),
         ),
         'price' => array('type' => 'text', 'title' => 'Цена', 'check' => 'empty'),
-        'torg' => array('type' => 'checkbox', 'title' => 'Торг', 'check' => 'empty'),
-        'kuzov' => array(
+        'torg' => array('type' => 'checkbox', 'title' => 'Торг', 'check' => 'empty'),*/
+        /*'kuzov' => array(
             'type' => 'select',
             'title' => 'Город',
             'values' => array(

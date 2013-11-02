@@ -125,13 +125,16 @@ class BaseAdminObjects extends BaseAdminSecurity
                     foreach ($objects as $obj_key => &$object) {
                         $keys[$object[$key]] = $object[$key];
                     }
-                    if (empty($keys))
+
+                    if (empty($keys) || isset($value['autocomplete']))
                         continue;
 
                     $values = $this->_adminModel
                         ->select($table, "{$value['identity']}, {$value['show_field']}")
                         ->where($value['identity'] . " in (" . implode(',', $keys) . ")")
                         ->fetchAll($value['identity']);
+
+                    $value['values'] = $values;
 
                     foreach ($objects as $obj_key => &$object) {
                         $object[$key] = $values[$object[$key]][$value['show_field']];

@@ -5,8 +5,8 @@ class BaseAdminStructure extends BaseController
 {
     protected $_pages = array (
       'Разделы сайта' => array('url' => '/admin/list/Section/'),
-      'Машины' => array('url' => '/admin/list/Car/'),
-      'Юзеры' => array('url' => '/admin/list/User/'),
+      'Цветы' => array('url' => '/admin/list/Socvetie/'),
+      'Категории цветов' => array('url' => '/admin/list/SocvetieCategory/'),
       'Посмотреть сайт' => array('url' => '/', 'blank' => 1)
     );
     

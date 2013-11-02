@@ -71,35 +71,41 @@ class BaseAdminObjects extends BaseAdminSecurity
       $start = isset($_GET['start']) ? $_GET['start'] : $this->_start;
       $offset = isset($_GET['offset']) ? $_GET['offset'] : $this->_offset;
 
-      $fields = $this->class->getProperty('fields')->getValue();
-      $table = $this->class->getProperty('tableName')->getValue();
-      $identity = $this->class->getProperty('identity')->getValue();
-
       $this->_adminModel = $this->_adminModel
-          ->select($table);
+          ->select($this->table);
 
+      $number_operators = array();
       foreach ($this->_filters as $field => $value) {
           if (!empty($value)) {
-              $this->_adminModel = $this->_adminModel->where("$field = '$value'");
+              if ($this->fields[$field]['type'] == 'number') {
+                  $operator = $_POST['number_operator_' . $field];
+                  $number_operators[$field] = $operator;
+                  $this->_adminModel = $this->_adminModel->where("$field $operator $value");
+              }
+              elseif ($this->fields[$field]['type'] == 'text') {
+                $this->_adminModel = $this->_adminModel->where("$field LIKE '$value%'");
+              } else {
+                $this->_adminModel = $this->_adminModel->where("$field = '$value'");
+              }
           }
       }
 
       $objects = $this->_adminModel
           ->limit($start, $offset)
-          ->execute();
+          ->fetchAll();
 
-      //echo "objects:<br>";print_r($objects);exit;
-      $this->findSelectFields($fields, $objects);
-      //echo "<br>fields:<br>";
-      //print_r($fields);
+      $this->findSelectFields($this->fields, $objects);
 
+      $this->assign('number_operators', $number_operators);
+      $this->assign('fields', $this->fields);
+      $this->assign('identity', $this->identity);
       $this->assign('objects', empty($objects) ? null : $objects);
-
-      $this->assign('fields', $fields);
-      $this->assign('identity', $identity);
     }
 
     function findSelectFields(&$fields, &$objects) {
+        if (empty($objects)) {
+            return;
+        }
         foreach ($fields as $key => &$value) {
             if ($value['type'] == 'select') {
                 require_once("classes/Objects/{$value['source']}.php");
@@ -112,7 +118,7 @@ class BaseAdminObjects extends BaseAdminSecurity
                     }
                 } catch (Exception $ex) {
                     // Not exists values, than object stores in database
-                    $table = $class->getProperty('tableName')->getValue();
+                    $table = $class->getProperty('table')->getValue();
 
                     $keys = array();
 
@@ -125,7 +131,7 @@ class BaseAdminObjects extends BaseAdminSecurity
                     $values = $this->_adminModel
                         ->select($table, "{$value['identity']}, {$value['show_field']}")
                         ->where($value['identity'] . " in (" . implode(',', $keys) . ")")
-                        ->execute($value['identity']);
+                        ->fetchAll($value['identity']);
 
                     foreach ($objects as $obj_key => &$object) {
                         $object[$key] = $values[$object[$key]][$value['show_field']];

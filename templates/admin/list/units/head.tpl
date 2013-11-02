@@ -17,6 +17,13 @@
                     {$field.title}
                     {if isset($field.filter)}
                         <br/>
+                        {if $field.type eq 'number'}
+                            <select name="number_operator_{$f_name}">
+                                <option value="=" {if $number_operators[$f_name] eq '='}selected="selected"{/if}> = </option>
+                                <option value="<" {if $number_operators[$f_name] eq '<'}selected="selected"{/if}> < </option>
+                                <option value=">" {if $number_operators[$f_name] eq '>'}selected="selected"{/if}> > </option>
+                            </select>
+                        {/if}
                         {if $field.type eq 'select' and !empty($field.values)}
                             <select name="filter_{$f_name}">
                                 <option value=""></option>

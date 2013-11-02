@@ -43,12 +43,20 @@ class AdminBase_m extends BaseModel
         return $this;
     }
 
-    public function execute($identity = null) {
+    public function execute() {
         if(defined('DEBUG') && !defined('STOP_DEBUG')) {
             echo $this->query . "<br/>";
         }
 
-        $rows = $this->fetchAll($this->query, $identity);
+        $this->executeQuery($this->query);
+    }
+
+    public function fetchAll($identity = null) {
+        if(defined('DEBUG') && !defined('STOP_DEBUG')) {
+            echo $this->query . "<br/>";
+        }
+
+        $rows = parent::fetchAll($this->query, $identity);
         return $rows;
     }
 	
@@ -73,98 +81,94 @@ class AdminBase_m extends BaseModel
 	  }
 	}
 	
-	public function delete($tableName, $filter) {
-	  $query = "delete from $tableName";
-	   
-	  if (!empty($filter)) {
-	    $query .= " $filter";
-	  }
-	  
-	  $this->executeQuery($query);
+	public function delete($table) {
+      $this->query = "delete from $table";
+
+      return $this;
 	}
 	
-	public function truncate($tableName) {
-	  $query = "truncate table $tableName";
-	   
-	  $this->executeQuery($query);
+	public function truncate($table) {
+      $this->query = "truncate table $table";
+
+      return $this;
 	}
 
-	public function add($object, $tableName, $ignore = false) {
+	public function insert($object, $ignore = false) {
       $ignore = $ignore ? 'ignore' : '';
 		
-	  $updateFields = $this->_getInsertSqls($object, $fields, $values);
+	  $updateFields = $this->_getInsertSqls($object->fields, $fieldsValue, $values);
 	  
-	  $query = "insert $ignore into $tableName $fields values $values";
-	  
-	  if(isset($_GET['debug']) && $_GET['debug'] == "on") {
-	    echo $query . "<br/>";
-	  }
+	  $query = "insert $ignore into {$object->table} $fieldsValue values $values";
+
+      if(defined('DEBUG') && !defined('STOP_DEBUG')) {
+          echo $this->query . "<br/>";
+      }
 	  
 	  $this->executeQuery($query);
 	  
 	  $id = $this->getInsertedId();
 	  
 	  if (!empty($updateFields)) 
-	      return $this->updateInsertedField($object, $tableName, $updateFields);
+	      return $this->updateInsertedField($object, $updateFields);
 	      
 	  return $id;
 	}
 	
 	
 	
-	public function update($object, $tableName) {
+	public function update($object) {
 	  $updateFields = $this->_getUpdateSqls($object, $sets, $identity);
-	  
-	  $query = "update $tableName $sets $identity";
-	  
-	  if(isset($_GET['debug']) && $_GET['debug'] == "on") {
-	    echo $query . "<br/>";
-	  }
+
+	  $query = "update {$object->table} $sets $identity";
+
+      if(defined('DEBUG') && !defined('STOP_DEBUG')) {
+          echo $this->query . "<br/>";
+      }
 
 	  $this->executeQuery($query);
 	  
 	  if (!empty($updateFields))
-	      $this->updateInsertedField($object, $tableName, $updateFields);
+	      $this->updateInsertedField($object, $updateFields);
 	}
 
-	protected function updateInsertedField($object, $tableName, $updateFields) {
+	protected function updateInsertedField($object, $updateFields) {
 	  $id = null;
-	  if ($object['fields'][$object['identity']]['value'] == "NULL" || !isset($object['fields'][$object['identity']]['value'])) {
+	  if ($object->fields[$object->identity]['value'] == "NULL" || !isset($object->fields[$object->identity]['value'])) {
 		  $id = $this->getInsertedId();
-		  $object['fields'][$object['identity']]['value'] = $id;
+		  $object->fields[$object->identity]['value'] = $id;
 	  } else {
-	  	  $id = $object['fields'][$object['identity']]['value'];
+	  	  $id = $object->fields[$object->identity]['value'];
 	  }
 	  
 	  foreach ($updateFields as $updateField) {
-  	      $links = explode("-", $object['fields'][$updateField]['link']);
+  	      $links = explode("-", $object->fields[$updateField]['link']);
     	  $link = "";
     	  
     	  foreach ($links as $l) {
-    	    $link .= empty($link) ? $object['fields'][$l]['value'] : "-" . $object['fields'][$l]['value'];
+    	    $link .= empty($link) ? $object->fields[$l]['value'] : "-" . $object->fields[$l]['value'];
     	  }
     	   
-    	  if ($object['fields'][$updateField]['type'] == 'img') {
-    	  	if (!empty($object['fields'][$updateField]['value'])) {
-	    	    $oldFile = $object['fields'][$updateField]['value'];
+    	  if ($object->fields[$updateField]['type'] == 'img') {
+    	  	if (!empty($object->fields[$updateField]['value'])) {
+	    	    $oldFile = $object->fields[$updateField]['value'];
 	    	    $path_parts = pathinfo($oldFile);
 	    	    
 	    	    $newFile = $this->translitIt($link) . "." . $path_parts['extension'];
-	    	    $object['fields'][$updateField]['value'] = $newFile;
+	    	    $object->fields[$updateField]['value'] = $newFile;
 	    	    
-	    	    if (file_exists($object['img']['small_path'] . "/" . $newFile)) {
-	    	    	@unlink($object['img']['small_path'] . "/" . $newFile);
-	    	    	@unlink($object['img']['upload'] . "/" . $newFile);
+	    	    if (file_exists($object->img['small_path'] . "/" . $newFile)) {
+	    	    	@unlink($object->img['small_path'] . "/" . $newFile);
+	    	    	@unlink($object->img['upload'] . "/" . $newFile);
 	    	    }
-	    	    rename($object['img']['small_path'] . "/" . $oldFile, $object['img']['small_path'] . "/" . $newFile);
-	    	    rename($object['img']['upload'] . "/" . $oldFile, $object['img']['upload'] . "/" . $newFile);
+	    	    rename($object->img['small_path'] . "/" . $oldFile, $object->img['small_path'] . "/" . $newFile);
+	    	    rename($object->img['upload'] . "/" . $oldFile, $object->img['upload'] . "/" . $newFile);
     	  	}
     	  } else {
-    	    $object['fields'][$updateField]['value'] = str_replace("--", "-", $this->translitIt($link));
+    	    $object->fields[$updateField]['value'] = str_replace("--", "-", $this->translitIt($link));
     	  }
     	  
     	  if (isset($object['fields'][$updateField]['value'])) {
-	    	  $query = "update $tableName set $updateField = '{$object['fields'][$updateField]['value']}' where {$object['identity']} = $id";
+	    	  $query = "update {$object->table} set $updateField = '{$object->fields[$updateField]['value']}' where {$object->identity} = $id";
 	    	  $this->executeQuery($query);
     	  }
 	  }
@@ -172,13 +176,13 @@ class AdminBase_m extends BaseModel
 	  return $id;
 	}
 	
-	protected function _getInsertSqls($object, &$fields, &$values) {
+	protected function _getInsertSqls($fields, &$fieldsValue, &$values) {
 	    $updateFields = array();
-	    
-		$fields = "";
+
+        $fieldsValue = "";
 		$values = "";
 		
-        foreach ($object['fields'] as $name => $field) {
+        foreach ($fields as $name => $field) {
         	if (isset($field['value'])) {
 	        	$fields .= $name . ",";
 	        	if ($field['value'] == "NULL") {
@@ -191,8 +195,8 @@ class AdminBase_m extends BaseModel
         	    $updateFields[] = $name;
         	}
         }
-	    $fields = rtrim($fields, ",");
-	    $fields = "($fields)";
+        $fieldsValue = rtrim($fieldsValue, ",");
+        $fieldsValue = "($fieldsValue)";
 	    
 	    $values = rtrim($values, ",");
 	    $values = "($values)";
@@ -206,9 +210,9 @@ class AdminBase_m extends BaseModel
 		$sets = "set ";
 		$identity = "where ";
 
-        foreach ($object['fields'] as $name => $field) {
+        foreach ($object->fields as $name => $field) {
         	if (isset($field['value'])) {
-        		if ($name != $object['identity']) {
+        		if ($name != $object->identity) {
         		    $sets .= $this->setField($field['value'], $name) . ",";
         		} else {
         		    $identity .= $this->setField($field['value'], $name);

@@ -6,6 +6,42 @@ class BaseController extends MLM_Smarty
 {
 	protected $_templatePath;
 	protected $_defaultPage = 'default.tpl';
+
+    protected function getField ($name) {
+        try {
+            $this->{$name} = $this->class->getProperty($name)->getValue();
+        } catch (Exception $ex) {
+            return null;
+        }
+    }
+
+    protected function getClassField ($class, $name) {
+        try {
+            return $class->getProperty($name)->getValue();
+        } catch (Exception $ex) {
+            return null;
+        }
+    }
+
+    protected function loadClass($class_name) {
+        require_once("classes/Objects/$class_name.php");
+        return new ReflectionClass($class_name);
+    }
+
+    protected function loadClassFromUrl ($urlIndex = 3) {
+        $class_name = Router::getUrlPart($urlIndex);
+        require_once("classes/Objects/$class_name.php");
+        $class_description = new ReflectionClass($class_name);
+
+        // Necessary for Delete and Update operations in admin
+        $this->assign('class', $class_name);
+
+        $this->class = $class_description;
+
+        $this->getField('fields');
+        $this->getField('identity');
+        $this->getField('table');
+    }
 	
 	public function GetLastFiles($dir, $withDir = true) {
 		$f = scandir($dir);
@@ -158,10 +194,10 @@ class BaseController extends MLM_Smarty
 	  }
 	}
 	
-	public function ParsePost(&$object) {
+	public function ParsePost(&$fields) {
 		$postHelper = $this->_loadPostHelper();
 		
-		foreach ($object['fields'] as $key => &$post_parameter) {
+		foreach ($fields as $key => &$post_parameter) {
 		    if (isset($post_parameter['link']) && !isset($post_parameter['value']) && $postHelper->GetFromPost($key) == null) {
 		    } elseif ($post_parameter['type'] == 'checkbox') {
 		        $post_parameter['value'] = $postHelper->GetFromPost($key) != null ? 1 : 0;

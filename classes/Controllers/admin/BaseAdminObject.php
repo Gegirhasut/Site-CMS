@@ -3,32 +3,34 @@ require_once('classes/Controllers/admin/BaseAdminSecurity.php');
 
 class BaseAdminObject extends BaseAdminSecurity
 {
-    protected $_defaultPage = "admin/admin-update-object.tpl";
-    protected $_idIndex = 3;
-    
+    /**
+     * @var AdminBase_m
+     */
+    protected $_adminModel;
+
     function post() {
         $operation = $this->_loadPostHelper()->GetFromPost('operation');
-        
-        $this->ParsePost($this->_object);
-        
-        $adminModel = $this->_getModelByName('AdminBase');
+
+        $this->ParsePost($this->fields);
+
+        $this->_adminModel = $this->_getModelByName('AdminBase');
         
         if ($operation == 'update') {
-        	$adminModel->update($this->_object, $this->_tableName);
+        	$this->_adminModel->update($this);
         }
         
         if ($operation == 'add') {
-          if (isset($this->_object['list_key'])) {
-          	$values = $this->_object['fields'][$this->_object['list_key']]['value'];
+          if (isset($this->fields['list_key'])) {
+          	$values = $this->fields[$this->fields['list_key']]['value'];
           	$values = explode("\r\n", $values);
           	foreach ($values as $value) {
           		if (!empty($value)) {
-	          		$this->_object['fields'][$this->_object['list_key']]['value'] = $value;
-	          		$adminModel->add($this->_object, $this->_tableName);
+	          		$this->fields[$this->fields['list_key']]['value'] = $value;
+                    $this->_adminModel->insert($this);
           		}
           	}
           } else {
-          	$adminModel->add($this->_object, $this->_tableName);
+          	$this->_adminModel->insert($this);
           }
         }
         
@@ -36,46 +38,57 @@ class BaseAdminObject extends BaseAdminSecurity
         
         $this->clear_all_cache();
         $this->assign('post', 1);
-    }    
+    }
+
+    protected function assignSelectFields() {
+        foreach ($this->fields as &$field) {
+            if ($field['type'] == 'select') {
+                if (!isset($field['autocomplete'])) {
+                    if (isset($field['source'])) {
+                        $class = $this->loadClass($field['source']);
+                        $table = $this->getClassField($class, 'table');
+
+                        $select = $this->_adminModel
+                            ->select($table)
+                            ->fetchAll();
+                    } else {
+                        $select = $field['values'];
+                    }
+                    $field['values'] = $select;
+                }
+            }
+        }
+    }
     
 	function display($uniquePageValue = 'admin-object')
 	{
-		$adminModel = $this->_getModelByName('AdminBase');
+        $this->_adminModel = $this->_getModelByName('AdminBase');
 		
 		$filter = "";
-		$id = Router::getUrlPart($this->_idIndex);
-		$object = null;
-		
+		$id = Router::getUrlPart(4);
+
         if ($id == null) {
-          $this->_defaultPage = "admin/admin-add-object.tpl";
+          $this->_defaultPage = "admin/add/object.tpl";
         } else {
-          $filter = $this->_object['identity'] . "=" . $id;
-          $object = $adminModel->get($this->_tableName, $filter);
+          $this->_defaultPage = "admin/update/object.tpl";
+          $object = $this->_adminModel
+              ->select($this->table)
+              ->where("{$this->identity} = $id")
+              ->fetchAll();
         }
 		
-		foreach ($this->_object['fields'] as &$field) {
-		  if ($field['type'] == 'select') {
-		    $filter = '';
-		    if (isset($field['filter'])) {
-		      $filter = $field['filter'];
-		    }
-		  	if (isset($field['join'])) {
-		    	$select = $adminModel->get($field['join'], $filter);
-		    } else {
-		    	$select = $field['values'];
-		    }
-		    $field['values'] = $select;
-		  }
-		}
-		
-		$select = Router::getParams('select');
-		if ($select != null) {
-		  $this->assign('select', $select);
-		}
-		
-		$this->assign('fields', $this->_object);
-		
+		$this->assignSelectFields();
+
+        //print_r($this->fields);echo "<br>";
+        //print_r($object[0]);echo "<br>";
+
+        /*$select = Router::getParams('select');
+        if ($select != null) {
+            $this->assign('select', $select);
+        }*/
+        $this->assign('fields', $this->fields);
         $this->assign('object', empty($object) ? null : $object[0]);
+        $this->assign('identity', $this->identity);
 		
 		$this->caching = false;
 		

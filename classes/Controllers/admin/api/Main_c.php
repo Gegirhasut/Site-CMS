@@ -8,7 +8,7 @@ class Main_c extends BaseAdminSecurity
         require_once("classes/Objects/$class_name.php");
         $class_description = new ReflectionClass($class_name);
 
-        $table = $class_description->getProperty('tableName')->getValue();
+        $table = $class_description->getProperty('table')->getValue();
 
         $adminModel = $this->_getModelByName('AdminBase');
 

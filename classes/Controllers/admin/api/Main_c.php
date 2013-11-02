@@ -27,7 +27,7 @@ class Main_c extends BaseAdminSecurity
             $adminModel->where($condition);
         }
 
-        $objects = $adminModel->execute();
+        $objects = $adminModel->fetchAll();
 
         require_once('helpers/json.php');
         echo arrayToJson(array('objects' => $objects));

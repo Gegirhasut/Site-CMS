@@ -103,9 +103,6 @@ class BaseAdminObjects extends BaseAdminSecurity
     }
 
     function findSelectFields(&$fields, &$objects) {
-        if (empty($objects)) {
-            return;
-        }
         foreach ($fields as $key => &$value) {
             if ($value['type'] == 'select') {
                 require_once("classes/Objects/{$value['source']}.php");
@@ -117,6 +114,9 @@ class BaseAdminObjects extends BaseAdminSecurity
                         $object[$key] = $value['values'][$object[$key]][$value['show_field']];
                     }
                 } catch (Exception $ex) {
+                    if (empty($objects)) {
+                        return;
+                    }
                     // Not exists values, than object stores in database
                     $table = $class->getProperty('table')->getValue();
 

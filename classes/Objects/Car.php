@@ -6,7 +6,7 @@ class Car {
 
     public static $fields = array(
         'car_id' => array('type' => 'text', 'nolist' => 1),
-        'probeg' => array('type' => 'text', 'title' => 'Пробег', 'check' => 'empty', 'filter' => 1),
+        'probeg' => array('type' => 'number', 'title' => 'Пробег', 'check' => 'empty', 'filter' => 1),
         'city' => array(
             'type' => 'select',
             'source' => 'City',

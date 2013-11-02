@@ -1,0 +1,85 @@
+<html>
+<head>
+<script type="text/javascript" src="/js/jquery-1.3.2.min.js"></script>
+<link rel="stylesheet" href="/css/thickbox.css" type="text/css" media="screen" />
+<script type="text/javascript" src="/js/thickbox.js"></script>
+
+    <script>
+     {if isset($post)}
+      window.close();
+     {/if}
+    </script>
+    <script type="text/javascript" src="/ckeditor/ckeditor.js"></script>    
+</head>
+<body>
+    <table>
+     <tr>
+      <td valign="top">
+        <form action="" method="post">
+            <table>
+                {foreach from=$fields.fields item=field key=name}
+                    {if $name neq $fields.identity}
+                        <tr>
+                            <td>{$field.title}:</td>
+                            <td>
+                                {if $field.type eq "select"}
+                                    <select name="{$name}" id="{$name}">
+                                        {if isset($field.empty)}
+                                            <option value=""></option>
+                                        {/if}
+                                        {foreach from=$field.values item=option}
+                                            <option value="{$option[$field.select_identity]|escape}" {if $object[$name] eq $option[$field.select_identity]}selected{/if}>{$option.name}</option>
+                                        {/foreach}
+                                    </select>
+                                {elseif $field.type eq "textarea"}
+                                    <textarea id="{$name}" name="{$name}"  {if isset($field.rows)}rows="{$field.rows}"{else}rows="5"{/if} {if isset($field.cols)}cols="{$field.cols}"{else}cols="25"{/if}>{$object[$name]|escape}</textarea>
+                                {elseif $field.type eq "img"}
+                                    <div id="{$fields.img.field}">
+                                     {if $object[$name] neq null}
+                                        <a href="/{$fields.img.upload}/{$object[$name]|escape}" title="Большая картинка" class="thickbox">
+                                          <img src="/{$fields.img.small_path}/{$object[$name]|escape}" alt="Увеличить картинку">
+                                        </a>
+                                     {else}
+                                        не загружена
+                                     {/if}
+                                    </div>
+                                {elseif $field.type eq "word"}
+                                    <textarea id="{$name}" name="{$name}">{$object[$name]|escape}</textarea>
+                                    <script type="text/javascript">
+                                        var editor{$name} = CKEDITOR.replace( '{$name}' );
+                                    </script>
+                                {else}
+                                    <input size="30" id="{$name}" type="{$field.type}" name="{$name}" {if $field.type neq 'checkbox'}value="{$object[$name]|escape}"{else} {if $object[$name] eq 1}checked{/if} {/if} />
+                                {/if}
+                            </td>
+                        </tr>
+                    {else}
+                        <tr>
+                            <td>Идентификатор:</td>
+                            <td>{$object[$name]}</td>
+                        </tr>
+                        <input type="hidden" name="{$name}" value="{$object[$name]}" />
+                    {/if}
+                {/foreach}
+                
+                <tr>
+                    <td colspan="2">
+                        <input type="hidden" name="operation" value="update" />
+                        <input id="submit" type="submit" value=" Изменить " />
+                        
+                        <input type="button" value=" Отмена " onclick="window.close();" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <br/><br/>
+       </td>
+       {if isset ($fields.img)}
+           <td valign="top">
+             {include file="units/uploadfile.tpl"}
+           </td>
+       {/if}
+      </tr>
+     </table>
+</body>
+</html>

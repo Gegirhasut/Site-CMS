@@ -1,0 +1,3 @@
+<?php
+
+$GLOBALS['mode'] = 'debug';

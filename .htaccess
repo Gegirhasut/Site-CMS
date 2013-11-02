@@ -1,0 +1,8 @@
+AddDefaultCharset UTF-8
+
+ErrorDocument 400 error400.php
+
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^([_,0-9A-Za-z/\-]*)$ /index.php [T=application/x-httpd-php,L,QSA]

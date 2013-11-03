@@ -1,6 +1,7 @@
 <?php
+require_once 'Object.php';
 
-class User {
+class User extends Object {
     public static $table = "cr_users";
 
     public static $identity = 'u_id';

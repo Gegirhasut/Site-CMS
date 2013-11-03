@@ -1,6 +1,7 @@
 <?php
+require_once 'Object.php';
 
-class City {
+class City extends Object {
     public static $fields = array(
         'id' => array ('type' => 'text', 'title' => 'id'),
         'city' => array ('type' => 'text', 'title' => 'Город')

@@ -1,5 +1,7 @@
 <?php
-class Car {
+require_once 'Object.php';
+
+class Car extends Object {
     public static $table = "cr_cars";
 
     public static $identity = 'car_id';

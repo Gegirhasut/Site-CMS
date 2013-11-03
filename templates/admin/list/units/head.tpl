@@ -27,14 +27,14 @@
                                 <option value="!=" {if $number_operators[$f_name] eq '!='}selected="selected"{/if}> != </option>
                             </select>
                         {/if}
-                        {if $field.type eq 'select' and !empty($field.values)}
+                        {if $field.type eq 'select' and !empty($field.values) and !isset($field.autocomplete)}
                             <select name="filter_{$f_name}">
                                 <option value=""></option>
                                 {foreach from=$field.values item=value key=option}
                                     <option value="{$option}" {if $option eq $filters[$f_name]}selected="selected"{/if}>{$value[$field.show_field]}</option>
                                 {/foreach}
                             </select>
-                        {elseif $field.type eq 'select' and empty($field.values)}
+                        {elseif $field.type eq 'select' and isset($field.autocomplete)}
                             {include file="admin/list/units/autocomplete.tpl"}
                         {else}
                             <input type="text" name="filter_{$f_name}" value="{$filters[$f_name]}" />

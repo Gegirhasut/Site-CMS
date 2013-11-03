@@ -4,11 +4,7 @@ require_once('classes/Controllers/admin/BaseAdminSecurity.php');
 class Main_c extends BaseAdminSecurity
 {
     public function display($uniquePageValue = 'api') {
-        $class_name = Router::getUrlPart(3);
-        require_once("classes/Objects/$class_name.php");
-        $class_description = new ReflectionClass($class_name);
-
-        $table = $class_description->getProperty('table')->getValue();
+        $class = $this->loadClass(Router::getUrlPart(3));
 
         $adminModel = $this->_getModelByName('AdminBase');
 
@@ -16,7 +12,7 @@ class Main_c extends BaseAdminSecurity
             define('STOP_DEBUG', true);
         }
 
-        $adminModel = $adminModel->select($table);
+        $adminModel = $adminModel->select($class->table);
 
         $condition = "";
         foreach ($_GET as $key => $value) {

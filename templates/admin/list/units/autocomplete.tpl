@@ -1,5 +1,5 @@
-<input type="text" name="{$f_name}" id="{$f_name}" onkeyup="fill{$f_name}()" value="{$post[$f_name]}"/>
-<input type="hidden" name="filter_{$f_name}" id="filter_{$f_name}" value="{$filters[$f_name]}" />
+<input type="text" name="{$f_name}" id="{$f_name}" onkeyup="fill{$f_name}()" value="{$post[$f_name]}" autocomplete="off"/>
+<input type="hidden" name="filter_{$f_name}" id="filter_{$f_name}" value="{if $post[$f_name] neq ''}{$filters[$f_name]}{/if}" />
 
 <script>
     var availableObjects{$f_name} = [];
@@ -13,6 +13,8 @@
                 url: '/admin/api/{$field.source}/' + search,
                 success: parseJson{$f_name}
             {rdelim});
+        {rdelim} else {ldelim}
+            $( "#filter_{$f_name}").val('');
         {rdelim}
     {rdelim}
 
@@ -26,10 +28,9 @@
 
         $( "#{$f_name}" ).autocomplete({ldelim}
             source: availableObjects{$f_name},
-            onSelect: function( event, ui ) {ldelim}
-                alert(1);
-            {rdelim}
         {rdelim});
+
+        $( "#{$f_name}" ).autocomplete( "search",  $( "#{$f_name}").val());
     {rdelim}
 
     function call{$f_name}() {ldelim}

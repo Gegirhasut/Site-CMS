@@ -71,8 +71,10 @@ class BaseAdminObjects extends BaseAdminSecurity
         $this->assign('filters', $this->_filters);
         $this->assign('post', $_POST);
 
-        $_SESSION['filters'] = $this->_filters;
-        $_SESSION['post'] = $_POST;
+        $filter = array(
+            'post' => $_POST
+        );
+        $_SESSION['filter_' . $this->class_name] = $filter;
     }
 
     function assignObjects() {
@@ -139,17 +141,35 @@ class BaseAdminObjects extends BaseAdminSecurity
                     // Not exists values, than object stores in database
                     $table = $select_class->table;
 
-                    if (isset($value['autocomplete']))
-                        continue;
+                    if (isset($value['autocomplete'])) {
+                        if (empty($objects))
+                            continue;
+                        $ids = array();
+                        foreach ($objects as $obj) {
+                            $ids[$obj[$value['identity']]] = $obj[$value['identity']];
+                        }
 
-                    $values = $this->_adminModel
-                        ->select($table, "{$value['identity']}, {$value['show_field']}")
-                        ->fetchAll($value['identity']);
+                        $ids = implode(',', $ids);
+                        $values = $this->_adminModel
+                            ->select($table, "{$value['identity']}, {$value['show_field']}")
+                            ->where("{$value['identity']} in ($ids)")
+                            ->fetchAll($value['identity']);
 
-                    $value['values'] = $values;
+                        $value['values'] = $values;
 
-                    foreach ($objects as $obj_key => &$object) {
-                        $object[$key] = $values[$object[$key]][$value['show_field']];
+                        foreach ($objects as $obj_key => &$object) {
+                            $object[$key] = $value['values'][$object[$key]][$value['show_field']];
+                        }
+                    } else {
+                        $values = $this->_adminModel
+                            ->select($table, "{$value['identity']}, {$value['show_field']}")
+                            ->fetchAll($value['identity']);
+
+                        $value['values'] = $values;
+
+                        foreach ($objects as $obj_key => &$object) {
+                            $object[$key] = $values[$object[$key]][$value['show_field']];
+                        }
                     }
                 }
             }
@@ -158,8 +178,8 @@ class BaseAdminObjects extends BaseAdminSecurity
     
     function display($uniquePageValue = 'admin-objects')
 	{
-        if (empty($_POST) && isset($_SESSION['post'])) {
-            $_POST = $_SESSION['post'];
+        if (empty($_POST) && isset($_SESSION['filter_' . $this->class_name])) {
+            $_POST = $_SESSION['filter_' . $this->class_name]['post'];
             $this->parsePostOnFilters();
         }
 

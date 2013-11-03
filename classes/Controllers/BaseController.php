@@ -10,6 +10,7 @@ class BaseController extends MLM_Smarty
     protected function loadClass($class_name, $assign = false) {
         if ($assign) {
             $this->assign('class', $class_name);
+            $this->class_name = $class_name;
         }
         require_once("classes/Objects/$class_name.php");
         $class_description = new ReflectionClass($class_name);

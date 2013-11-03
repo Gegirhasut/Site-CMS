@@ -22,6 +22,7 @@ class Car {
             'title' => 'Юзер',
             'show_field' => 'name',
             'identity' => 'u_id',
+            'autocomplete' => 1,
             'filter' => 1
         ),
 

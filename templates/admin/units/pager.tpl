@@ -1,3 +1,4 @@
+<br>
 Страницы:
 {if ($currentPage) gt 1}
     <a href="?page={$currentPage-1}"><<</a>

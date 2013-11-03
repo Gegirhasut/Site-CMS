@@ -44,7 +44,7 @@ class BaseAdminObject extends BaseAdminSecurity
         $this->assign('post', 1);
     }
 
-    protected function assignSelectFields($class) {
+    protected function assignSelectFields($class, $object) {
         foreach ($this->class->fields as &$field) {
             if ($field['type'] == 'select') {
                 if (!isset($field['autocomplete'])) {
@@ -62,6 +62,14 @@ class BaseAdminObject extends BaseAdminSecurity
                         $select = $field['values'];
                     }
                     $field['values'] = $select;
+                } elseif (!empty($object)) {
+                    $source_class = $this->loadClass($field['source']);
+                    $select = $this->_adminModel
+                        ->select($source_class->table, "{$field['show_field']}")
+                        ->where("{$field['identity']} = {$object[0][$field['identity']]}")
+                        ->fetchAll();
+
+                    $field['values'] = $select[0][$field['show_field']];
                 }
             }
         }
@@ -75,6 +83,7 @@ class BaseAdminObject extends BaseAdminSecurity
 		
 		$filter = "";
 		$id = Router::getUrlPart(4);
+        $object = null;
 
         if ($id == null) {
           $this->_defaultPage = "admin/add/object.tpl";
@@ -86,7 +95,7 @@ class BaseAdminObject extends BaseAdminSecurity
               ->fetchAll();
         }
 
-		$this->assignSelectFields($class);
+		$this->assignSelectFields($class, $object);
 
         //print_r($this->fields);echo "<br>";
         //print_r($object[0]);echo "<br>";

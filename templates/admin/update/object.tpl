@@ -17,17 +17,26 @@
     </script>
     <script type="text/javascript" src="/ckeditor/ckeditor.js"></script>
     
-    {if isset($fields.manyToMany) && $fields.manyToMany.Type.type eq 'autocomplete'}
-        <script src="/js/jquery.ui.core.min.js"></script>
-        <script src="/js/jquery.ui.widget.min.js"></script>
-        <script src="/js/jquery.ui.position.min.js"></script>
-        <script src="/js/jquery.ui.autocomplete.min.js"></script>
-        <link href="/css/themes/jquery-ui-1.8.18.custom.css" rel="stylesheet" type="text/css">
-        <link href="/css/app/main.css" rel="stylesheet" type="text/css">
-    {/if}
-        
+    <script src="/js/jquery.ui.core.min.js"></script>
+    <script src="/js/jquery.ui.widget.min.js"></script>
+    <script src="/js/jquery.ui.position.min.js"></script>
+    <script src="/js/jquery.ui.autocomplete.min.js"></script>
+    <link href="/css/themes/jquery-ui-1.8.18.custom.css" rel="stylesheet" type="text/css">
+
 </head>
 <body>
+    <script>
+        var callFunctions = [];
+        {literal}
+        function callCallFunctions() {
+            for(var i = 0; i< callFunctions.length; i++) {
+                callFunctions[i]();
+            }
+            return true;
+        }
+        {/literal}
+    </script>
+
     <table {if !isset($fields.img)}width="100%"{/if}>
      <tr>
       <td valign="top">

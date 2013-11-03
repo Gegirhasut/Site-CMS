@@ -15,8 +15,8 @@ class AdminBase_m extends BaseModel
         return self::$instance;
     }*/
 
-	public function select($tableName, $fields = '*') {
-	  $this->query = "select $fields from $tableName";
+	public function select($table, $fields = '*') {
+	  $this->query = "select $fields from $table";
 	    
       return $this;
 	}
@@ -97,14 +97,14 @@ class AdminBase_m extends BaseModel
       $ignore = $ignore ? 'ignore' : '';
 		
 	  $updateFields = $this->_getInsertSqls($object->fields, $fieldsValue, $values);
-	  
-	  $query = "insert $ignore into {$object->table} $fieldsValue values $values";
+
+      $this->query = "insert $ignore into {$object->table} $fieldsValue values $values";
 
       if(defined('DEBUG') && !defined('STOP_DEBUG')) {
           echo $this->query . "<br/>";
       }
 	  
-	  $this->executeQuery($query);
+	  $this->executeQuery($this->query);
 	  
 	  $id = $this->getInsertedId();
 	  
@@ -119,13 +119,13 @@ class AdminBase_m extends BaseModel
 	public function update($object) {
 	  $updateFields = $this->_getUpdateSqls($object, $sets, $identity);
 
-	  $query = "update {$object->table} $sets $identity";
+        $this->query = "update {$object->table} $sets $identity";
 
       if(defined('DEBUG') && !defined('STOP_DEBUG')) {
           echo $this->query . "<br/>";
       }
 
-	  $this->executeQuery($query);
+	  $this->executeQuery($this->query);
 	  
 	  if (!empty($updateFields))
 	      $this->updateInsertedField($object, $updateFields);

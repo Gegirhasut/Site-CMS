@@ -4,8 +4,8 @@ require_once('classes/Controllers/admin/BaseAdminSecurity.php');
 class BaseAdminObjects extends BaseAdminSecurity
 {
     protected $_defaultPage = "admin/list/objects.tpl";
-    protected $_start = 0;
-    protected $_offset = 10;
+    protected $_page = 1;
+    protected $_offset = 15;
     protected $_filters = array ();
     /**
      * @var AdminBase_m
@@ -60,23 +60,27 @@ class BaseAdminObjects extends BaseAdminSecurity
     }*/
 
     function post () {
+        $this->parsePostOnFilters();
+    }
+
+    function parsePostOnFilters() {
         $post = $this->_loadPostHelper();
+
         $this->_filters = $post->GetFromPostByMask('filter_', true);
 
         $this->assign('filters', $this->_filters);
         $this->assign('post', $_POST);
 
-        /*foreach($_POST as $key => $value) {
-            $this->assign('post'$key, $value);
-        }*/
+        $_SESSION['filters'] = $this->_filters;
+        $_SESSION['post'] = $_POST;
     }
 
     function assignObjects() {
-      $start = isset($_GET['start']) ? $_GET['start'] : $this->_start;
+      $page = isset($_GET['page']) ? $_GET['page'] : $this->_page;
       $offset = isset($_GET['offset']) ? $_GET['offset'] : $this->_offset;
 
       $this->_adminModel = $this->_adminModel
-          ->select($this->class->table);
+          ->select($this->class->table, 'SQL_CALC_FOUND_ROWS *');
 
       $number_operators = array();
       foreach ($this->_filters as $field => $value) {
@@ -95,8 +99,10 @@ class BaseAdminObjects extends BaseAdminSecurity
       }
 
       $objects = $this->_adminModel
-          ->limit($start, $offset)
+          ->limit(($page - 1) * $offset, $offset)
           ->fetchAll();
+
+      $this->calculatePages($page, $offset);
 
       $this->findSelectFields($this->class->fields, $objects);
 
@@ -104,6 +110,17 @@ class BaseAdminObjects extends BaseAdminSecurity
       $this->assign('fields', $this->class->fields);
       $this->assign('identity', $this->class->identity);
       $this->assign('objects', empty($objects) ? null : $objects);
+    }
+
+    function calculatePages($page, $offset) {
+        $rowsCount = $this->_adminModel->getRowsCount();
+        $pages = (int) ($rowsCount / $offset);
+        if ($pages * $offset < $rowsCount) {
+            $pages++;
+        }
+
+        $this->assign('pagesCount', $pages);
+        $this->assign('currentPage', $page);
     }
 
     function findSelectFields(&$fields, &$objects) {
@@ -141,6 +158,11 @@ class BaseAdminObjects extends BaseAdminSecurity
     
     function display($uniquePageValue = 'admin-objects')
 	{
+        if (empty($_POST) && isset($_SESSION['post'])) {
+            $_POST = $_SESSION['post'];
+            $this->parsePostOnFilters();
+        }
+
         /*
          * AdminBase_m
          */

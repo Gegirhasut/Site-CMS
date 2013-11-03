@@ -53,6 +53,8 @@
     
     </table>
 
+    {include file="admin/units/pager.tpl"}
+
     {if isset($fields.truncate)}
     	<br/>
 	    <a href="javascript:open_window('/admin/truncate/{$class}/',200,200);">Удалить всех</a>

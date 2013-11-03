@@ -1,3 +1,15 @@
+<script>
+    var callFunctions = [];
+    {literal}
+    function callCallFunctions() {
+        for(var i = 0; i< callFunctions.length; i++) {
+            callFunctions[i]();
+        }
+        return true;
+    }
+    {/literal}
+</script>
+
 <form action="" method="post">
     <table>
         {foreach from=$fields item=field key=name}

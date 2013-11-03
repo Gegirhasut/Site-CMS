@@ -12,6 +12,13 @@
     <script type="text/javascript" src="/js/calendar-setup.js"></script>
     
     <link rel="stylesheet" type="text/css" href="/css/calendar.css" />
+
+    <script src="/js/jquery.ui.core.min.js"></script>
+    <script src="/js/jquery.ui.widget.min.js"></script>
+    <script src="/js/jquery.ui.position.min.js"></script>
+    <script src="/js/jquery.ui.autocomplete.min.js"></script>
+    <link href="/css/themes/jquery-ui-1.8.18.custom.css" rel="stylesheet" type="text/css">
+
 </head>
 <body>
 	<table>

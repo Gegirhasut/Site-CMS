@@ -25,18 +25,6 @@
 
 </head>
 <body>
-    <script>
-        var callFunctions = [];
-        {literal}
-        function callCallFunctions() {
-            for(var i = 0; i< callFunctions.length; i++) {
-                callFunctions[i]();
-            }
-            return true;
-        }
-        {/literal}
-    </script>
-
     <table {if !isset($fields.img)}width="100%"{/if}>
      <tr>
       <td valign="top">

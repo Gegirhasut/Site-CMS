@@ -111,7 +111,7 @@ class BaseAdminObjects extends BaseAdminSecurity
             if ($value['type'] == 'select') {
                 $select_class = $this->loadClass($value['source']);
 
-                if (isset($value['values']))
+                if (isset($select_class->values))
                 {
                     // Exists values, than object doesn't store in database
                     $value['values'] = $select_class->values;

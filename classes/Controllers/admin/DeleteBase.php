@@ -5,7 +5,7 @@ class DeleteBase extends BaseAdminSecurity
 {
     public function __construct() {
       parent::__construct();
-      $this->loadClassFromUrl();
+      $this->class = $this->loadClass(Router::getUrlPart(3), true);
     }
 
     function post() {
@@ -48,9 +48,9 @@ class DeleteBase extends BaseAdminSecurity
 	      $this->assign('img', $img);
 	    }*/
 	    
-	    $this->assign('field', $this->identity);
+	    $this->assign('field', $this->class->identity);
 	    $this->assign('id', $id);
-	    $this->assign('table', $this->table);
+	    $this->assign('table', $this->class->table);
 	  
 		$this->_defaultPage = "admin/delete/object.tpl";
 

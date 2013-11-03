@@ -21,7 +21,10 @@
                             <select name="number_operator_{$f_name}">
                                 <option value="=" {if $number_operators[$f_name] eq '='}selected="selected"{/if}> = </option>
                                 <option value="<" {if $number_operators[$f_name] eq '<'}selected="selected"{/if}> < </option>
+                                <option value="<=" {if $number_operators[$f_name] eq '<='}selected="selected"{/if}> <= </option>
                                 <option value=">" {if $number_operators[$f_name] eq '>'}selected="selected"{/if}> > </option>
+                                <option value=">=" {if $number_operators[$f_name] eq '>='}selected="selected"{/if}> >= </option>
+                                <option value="!=" {if $number_operators[$f_name] eq '!='}selected="selected"{/if}> != </option>
                             </select>
                         {/if}
                         {if $field.type eq 'select' and !empty($field.values)}

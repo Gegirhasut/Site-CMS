@@ -8,29 +8,33 @@ class BaseAdminObject extends BaseAdminSecurity
      */
     protected $_adminModel;
 
+    public function __construct() {
+        $this->class = $this->loadClass(Router::getUrlPart(3), true);
+    }
+
     function post() {
         $operation = $this->_loadPostHelper()->GetFromPost('operation');
 
-        $this->ParsePost($this->fields);
+        $this->ParsePost($this->class->fields);
 
         $this->_adminModel = $this->_getModelByName('AdminBase');
         
         if ($operation == 'update') {
-        	$this->_adminModel->update($this);
+        	$this->_adminModel->update($this->class);
         }
         
         if ($operation == 'add') {
-          if (isset($this->fields['list_key'])) {
-          	$values = $this->fields[$this->fields['list_key']]['value'];
+          if (isset($this->class->fields['list_key'])) {
+          	$values = $this->class->fields[$this->class->fields['list_key']]['value'];
           	$values = explode("\r\n", $values);
           	foreach ($values as $value) {
           		if (!empty($value)) {
-	          		$this->fields[$this->fields['list_key']]['value'] = $value;
-                    $this->_adminModel->insert($this);
+                    $this->class->fields[$this->class->fields['list_key']]['value'] = $value;
+                    $this->_adminModel->insert($this->class);
           		}
           	}
           } else {
-          	$this->_adminModel->insert($this);
+          	$this->_adminModel->insert($this->class);
           }
         }
         
@@ -40,20 +44,19 @@ class BaseAdminObject extends BaseAdminSecurity
         $this->assign('post', 1);
     }
 
-    protected function assignSelectFields() {
-        foreach ($this->fields as &$field) {
+    protected function assignSelectFields($class) {
+        foreach ($this->class->fields as &$field) {
             if ($field['type'] == 'select') {
                 if (!isset($field['autocomplete'])) {
                     if (isset($field['source'])) {
-                        $class = $this->loadClass($field['source']);
-                        $table = $this->getClassField($class, 'table');
+                        $source_class = $this->loadClass($field['source']);
 
-                        if (!empty($table)) {
+                        if (isset($source_class->table)) {
                             $select = $this->_adminModel
-                                ->select($table)
+                                ->select($source_class->table)
                                 ->fetchAll();
                         } else {
-                            $select = $this->getClassField($class, 'values');
+                            $select = $source_class->values;
                         }
                     } else {
                         $select = $field['values'];
@@ -66,6 +69,8 @@ class BaseAdminObject extends BaseAdminSecurity
     
 	function display($uniquePageValue = 'admin-object')
 	{
+        $class = $this->loadClass(Router::getUrlPart(3));
+
         $this->_adminModel = $this->_getModelByName('AdminBase');
 		
 		$filter = "";
@@ -76,12 +81,12 @@ class BaseAdminObject extends BaseAdminSecurity
         } else {
           $this->_defaultPage = "admin/update/object.tpl";
           $object = $this->_adminModel
-              ->select($this->table)
-              ->where("{$this->identity} = $id")
+              ->select($this->class->table)
+              ->where("{$this->class->identity} = $id")
               ->fetchAll();
         }
 
-		$this->assignSelectFields();
+		$this->assignSelectFields($class);
 
         //print_r($this->fields);echo "<br>";
         //print_r($object[0]);echo "<br>";
@@ -90,9 +95,9 @@ class BaseAdminObject extends BaseAdminSecurity
         if ($select != null) {
             $this->assign('select', $select);
         }*/
-        $this->assign('fields', $this->fields);
+        $this->assign('fields', $this->class->fields);
         $this->assign('object', empty($object) ? null : $object[0]);
-        $this->assign('identity', $this->identity);
+        $this->assign('identity', $this->class->identity);
 		
 		$this->caching = false;
 		

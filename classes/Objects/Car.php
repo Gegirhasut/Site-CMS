@@ -1,12 +1,11 @@
 <?php
-require_once 'Object.php';
 
-class Car extends Object {
-    public static $table = "cr_cars";
+class Car {
+    public $table = "cr_cars";
 
-    public static $identity = 'car_id';
+    public $identity = 'car_id';
 
-    public static $fields = array(
+    public $fields = array(
         'car_id' => array('type' => 'text', 'nolist' => 1),
         'probeg' => array('type' => 'number', 'title' => 'Пробег', 'check' => 'empty', 'filter' => 1),
         'city' => array(

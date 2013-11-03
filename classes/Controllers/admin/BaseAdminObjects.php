@@ -11,6 +11,10 @@ class BaseAdminObjects extends BaseAdminSecurity
      * @var AdminBase_m
      */
     protected $_adminModel;
+
+    public function __construct() {
+        $this->class = $this->loadClass(Router::getUrlPart(3), true);
+    }
     
 /*    function sort($objects, $adminModel) {
         $postHelper = $this->_loadPostHelper();
@@ -72,17 +76,17 @@ class BaseAdminObjects extends BaseAdminSecurity
       $offset = isset($_GET['offset']) ? $_GET['offset'] : $this->_offset;
 
       $this->_adminModel = $this->_adminModel
-          ->select($this->table);
+          ->select($this->class->table);
 
       $number_operators = array();
       foreach ($this->_filters as $field => $value) {
           if (!empty($value)) {
-              if ($this->fields[$field]['type'] == 'number') {
+              if ($this->class->fields[$field]['type'] == 'number') {
                   $operator = $_POST['number_operator_' . $field];
                   $number_operators[$field] = $operator;
                   $this->_adminModel = $this->_adminModel->where("$field $operator $value");
               }
-              elseif ($this->fields[$field]['type'] == 'text') {
+              elseif ($this->class->fields[$field]['type'] == 'text') {
                 $this->_adminModel = $this->_adminModel->where("$field LIKE '$value%'");
               } else {
                 $this->_adminModel = $this->_adminModel->where("$field = '$value'");
@@ -94,44 +98,35 @@ class BaseAdminObjects extends BaseAdminSecurity
           ->limit($start, $offset)
           ->fetchAll();
 
-      $this->findSelectFields($this->fields, $objects);
+      $this->findSelectFields($this->class->fields, $objects);
 
       $this->assign('number_operators', $number_operators);
-      $this->assign('fields', $this->fields);
-      $this->assign('identity', $this->identity);
+      $this->assign('fields', $this->class->fields);
+      $this->assign('identity', $this->class->identity);
       $this->assign('objects', empty($objects) ? null : $objects);
     }
 
     function findSelectFields(&$fields, &$objects) {
         foreach ($fields as $key => &$value) {
             if ($value['type'] == 'select') {
-                require_once("classes/Objects/{$value['source']}.php");
-                $class = new ReflectionClass($value['source']);
-                try {
+                $select_class = $this->loadClass($value['source']);
+
+                if (isset($value['values']))
+                {
                     // Exists values, than object doesn't store in database
-                    $value['values'] = $class->getProperty('values')->getValue();
+                    $value['values'] = $select_class->values;
                     foreach ($objects as $obj_key => &$object) {
                         $object[$key] = $value['values'][$object[$key]][$value['show_field']];
                     }
-                } catch (Exception $ex) {
-                    if (empty($objects)) {
-                        return;
-                    }
+                } else {
                     // Not exists values, than object stores in database
-                    $table = $class->getProperty('table')->getValue();
+                    $table = $select_class->table;
 
-                    $keys = array();
-
-                    foreach ($objects as $obj_key => &$object) {
-                        $keys[$object[$key]] = $object[$key];
-                    }
-
-                    if (empty($keys) || isset($value['autocomplete']))
+                    if (isset($value['autocomplete']))
                         continue;
 
                     $values = $this->_adminModel
                         ->select($table, "{$value['identity']}, {$value['show_field']}")
-                        ->where($value['identity'] . " in (" . implode(',', $keys) . ")")
                         ->fetchAll($value['identity']);
 
                     $value['values'] = $values;

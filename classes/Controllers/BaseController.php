@@ -7,42 +7,16 @@ class BaseController extends MLM_Smarty
 	protected $_templatePath;
 	protected $_defaultPage = 'default.tpl';
 
-    protected function getField ($name) {
-        try {
-            $this->{$name} = $this->class->getProperty($name)->getValue();
-        } catch (Exception $ex) {
-            return null;
+    protected function loadClass($class_name, $assign = false) {
+        if ($assign) {
+            $this->assign('class', $class_name);
         }
-    }
-
-    protected function getClassField ($class, $name) {
-        try {
-            return $class->getProperty($name)->getValue();
-        } catch (Exception $ex) {
-            return null;
-        }
-    }
-
-    protected function loadClass($class_name) {
-        require_once("classes/Objects/$class_name.php");
-        return new ReflectionClass($class_name);
-    }
-
-    protected function loadClassFromUrl ($urlIndex = 3) {
-        $class_name = Router::getUrlPart($urlIndex);
         require_once("classes/Objects/$class_name.php");
         $class_description = new ReflectionClass($class_name);
-
-        // Necessary for Delete and Update operations in admin
-        $this->assign('class', $class_name);
-
-        $this->class = $class_description;
-
-        $this->getField('fields');
-        $this->getField('identity');
-        $this->getField('table');
+        $class = $class_description->newInstance();
+        return $class;
     }
-	
+
 	public function GetLastFiles($dir, $withDir = true) {
 		$f = scandir($dir);
 		$files = array();

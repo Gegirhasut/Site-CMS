@@ -21,6 +21,20 @@ class Main_c extends BaseController
 		$simpleImage->load($path);
 		$simpleImage->crop($x, $y, $x2, $y2, $dest_w, $dest_h);
 		$new_path = str_replace($uploadPath, $imgSmallPath, $path);
+
+        if (strpos($new_path, '/') !== false) {
+            $pos = strrpos($new_path, '/');
+            $folders = substr($new_path, 0, $pos);
+            $folders = explode('/', $folders);
+            $folder = "";
+            foreach ($folders as $path) {
+                $folder .= "$path/";
+                if (!is_dir($folder)) {
+                    mkdir($folder);
+                }
+            }
+        }
+
 		$simpleImage->save($new_path);
 		
 		if (isset($_POST['delete']) && $_POST['delete'] == 1) {

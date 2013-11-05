@@ -100,7 +100,7 @@ class BaseAdminObject extends BaseAdminSecurity
     protected function assignImageFields(&$object) {
         if(empty($object))
             return;
-        
+
         $subClass = $this->loadClass($this->class->fields[$this->class->images['field']]['source']);
 
         $subValues = $this->_adminModel

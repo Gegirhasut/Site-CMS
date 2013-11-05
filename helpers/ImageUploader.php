@@ -21,6 +21,24 @@ class ImageUploader
 	{
 		$from = $_FILES['fileToUpload']['tmp_name'];
 		$extension = $this->getExtension(basename($_FILES['fileToUpload']['name']));
+        $chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+        $f1 = $chars[rand(0, strlen($chars)-1)];
+        $f2 = $chars[rand(0, strlen($chars)-1)];
+        $f3 = $chars[rand(0, strlen($chars)-1)];
+        $name = "$f1/$f2/$f3/$name";
+
+        if (!is_dir("$dir/$f1")) {
+            mkdir("$dir/$f1");
+        }
+
+        if (!is_dir("$dir/$f1/$f2")) {
+            mkdir("$dir/$f1/$f2");
+        }
+
+        if (!is_dir("$dir/$f1/$f2/$f3")) {
+            mkdir("$dir/$f1/$f2/$f3");
+        }
+
 		$to = "$dir/$name.$extension";
 		
 		if (move_uploaded_file($from, $to)) {

@@ -177,9 +177,10 @@ class BaseController extends MLM_Smarty
             if ($post_parameter['type'] == 'images') {
                 $post_parameter['value'] = $postHelper->GetFromPost($key);
                 $images = $postHelper->GetFromPostByMask('images_' . $key . '_');
+                $post_parameter['subvalue'] = array();
+                $subValues[] = $key;
+
                 if (!empty($images)) {
-                    $subValues[] = $key;
-                    $post_parameter['subvalue'] = array();
                     foreach ($images as $image) {
                         $post_parameter['subvalue'][] = $image;
                     }

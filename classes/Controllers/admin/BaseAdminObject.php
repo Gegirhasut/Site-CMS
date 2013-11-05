@@ -15,16 +15,20 @@ class BaseAdminObject extends BaseAdminSecurity
     function post() {
         $operation = $this->_loadPostHelper()->GetFromPost('operation');
 
-        $this->ParsePost($this->class->fields);
+        $subValues = $this->ParsePost($this->class->fields);
+        /*print_r($this->class->fields);
+        print_r($subValues);
+        exit;*/
 
         $this->_adminModel = $this->_getModelByName('AdminBase');
         
         if ($operation == 'update') {
         	$this->_adminModel->update($this->class);
+            $id = $this->class->fields[$this->class->identity]['value'];
         }
         
         if ($operation == 'add') {
-          if (isset($this->class->fields['list_key'])) {
+          /*if (isset($this->class->fields['list_key'])) {
           	$values = $this->class->fields[$this->class->fields['list_key']]['value'];
           	$values = explode("\r\n", $values);
           	foreach ($values as $value) {
@@ -33,9 +37,27 @@ class BaseAdminObject extends BaseAdminSecurity
                     $this->_adminModel->insert($this->class);
           		}
           	}
-          } else {
-          	$this->_adminModel->insert($this->class);
-          }
+          } else {*/
+          	$id = $this->_adminModel->insert($this->class);
+          //}
+        }
+
+        if (!empty($subValues)) {
+            foreach ($subValues as $subValue) {
+                $values = $this->class->fields[$subValue]['subvalue'];
+                $subClass = $this->loadClass($this->class->fields[$subValue]['source']);
+                $this->_adminModel
+                    ->delete($subClass->table)
+                    ->where($this->class->identity . " = $id")
+                    ->execute();
+
+                $subClass->fields[$this->class->fields[$subValue]['join_field']]['value'] = $id;
+
+                foreach ($values as $path) {
+                    $subClass->fields['path']['value'] = $path;
+                    $this->_adminModel->insert($subClass);
+                }
+            }
         }
         
         $this->caching = true;
@@ -44,7 +66,7 @@ class BaseAdminObject extends BaseAdminSecurity
         $this->assign('post', 1);
     }
 
-    protected function assignSelectFields($class, $object) {
+    protected function assignSelectFields($object) {
         foreach ($this->class->fields as &$field) {
             if ($field['type'] == 'select') {
                 if (!isset($field['autocomplete'])) {
@@ -74,11 +96,23 @@ class BaseAdminObject extends BaseAdminSecurity
             }
         }
     }
+
+    protected function assignImageFields(&$object) {
+        if(empty($object))
+            return;
+        
+        $subClass = $this->loadClass($this->class->fields[$this->class->images['field']]['source']);
+
+        $subValues = $this->_adminModel
+            ->select($subClass->table)
+            ->where($this->class->identity . " = {$object[0][$this->class->identity]['value']}")
+            ->fetchAll();
+
+        $object[0][$this->class->images['field']] = $subValues;
+    }
     
 	function display($uniquePageValue = 'admin-object')
 	{
-        $class = $this->loadClass(Router::getUrlPart(3));
-
         $this->_adminModel = $this->_getModelByName('AdminBase');
 		
 		$filter = "";
@@ -95,7 +129,7 @@ class BaseAdminObject extends BaseAdminSecurity
               ->fetchAll();
         }
 
-		$this->assignSelectFields($class, $object);
+		$this->assignSelectFields($object);
 
         //print_r($this->fields);echo "<br>";
         //print_r($object[0]);echo "<br>";
@@ -104,6 +138,10 @@ class BaseAdminObject extends BaseAdminSecurity
         if ($select != null) {
             $this->assign('select', $select);
         }*/
+        if (isset($this->class->images)) {
+            $this->assignImageFields($object);
+            $this->assign('images', $this->class->images);
+        }
         $this->assign('fields', $this->class->fields);
         $this->assign('object', empty($object) ? null : $object[0]);
         $this->assign('identity', $this->class->identity);

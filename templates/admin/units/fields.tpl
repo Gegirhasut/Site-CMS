@@ -7,6 +7,19 @@
         }
         return true;
     }
+
+    function getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField)
+    {
+        var content = '<div id="image_div_' + currentIndex + '" class="images_div">';
+        content += '<a href="/' + bigPath + '" title="Большая картинка" class="thickbox">';
+        content += '<img src="/' + smallPath + '" alt="Увеличить картинку">';
+        content += '</a><a href="javascript:;" title="Удалить" onclick="remove_image(' + currentIndex + ')">X</a>';
+        content += "<input type='hidden' name='images_" + imgField + "_" + currentIndex + "' value='" + fileName + "' />";
+        content += '</div>';
+
+        return content;
+    }
+
     {/literal}
 </script>
 
@@ -29,9 +42,9 @@
                                     {include file="admin/units/field_select.tpl"}
                                 {/if}
                             {elseif $field.type eq "textarea"}
-                                <textarea id="{$name}" name="{$name}" rows="5" cols="25"></textarea>
-                            {elseif $field.type eq "img"}
-                                <div id="{$fields.img.field}">не загружена</div>
+                                <textarea id="{$name}" name="{$name}" rows="5" cols="25">{$object[$name]}</textarea>
+                            {elseif $field.type eq "images"}
+                                {include file="admin/units/field_images.tpl"}
                             {elseif $field.type eq "calendar"}
                                 <input name="{$name}" value="{$smarty.now|date_format:'%Y.%m.%d'}" id="{$name}" style="width: 100px;" type="text"> <button value="Выбрать" type="button" id="trigger_{$name}"><span>&nbsp;Календарь&nbsp;</span></button>
 
@@ -47,7 +60,7 @@
                                     );
                                 </script>
                             {elseif $field.type eq "word"}
-                                <textarea id="{$name}" name="{$name}"></textarea>
+                                <textarea id="{$name}" name="{$name}">{$object[$name]}</textarea>
                                 <script type="text/javascript">
                                     var editor{$name} = CKEDITOR.replace( '{$name}' );
                                 </script>
@@ -75,6 +88,9 @@
                                         value="{$field.default}"
                                     {/if}
                                     size="30"
+                                    {if $field.type eq 'checkbox' and $object[$name] eq 1}
+                                        checked="checked"
+                                    {/if}
                                     {if isset($field.events)}
                                         {foreach from=$field.events item=func key=event}
                                             {$event} = '{$func}()'

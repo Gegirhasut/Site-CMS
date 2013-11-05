@@ -5,6 +5,14 @@ class Car {
 
     public $identity = 'car_id';
 
+    public $images = array(
+        'small_path' => 'images/small',
+        'upload' => 'images/upload',
+        'w' => 218,
+        'h' => 204,
+        'field' => 'photos',
+    );
+
     public $fields = array(
         'car_id' => array('type' => 'text', 'nolist' => 1),
         'probeg' => array('type' => 'number', 'title' => 'Пробег', 'check' => 'empty', 'filter' => 1),
@@ -26,14 +34,22 @@ class Car {
             'filter' => 1
         ),
 
-        'year' => array('type' => 'text', 'title' => 'year'),
-        'price' => array('type' => 'text', 'title' => 'price'),
+        'year' => array('type' => 'number', 'title' => 'year', 'filter' => 1, 'size' => 4),
+        'price' => array('type' => 'number', 'title' => 'price', 'filter' => 1, 'size' => 10),
+        'torg' => array ('type' => 'checkbox', 'title' => 'Торг'),
         'kuzov' => array('type' => 'text', 'title' => 'kuzov'),
         'engine' => array('type' => 'text', 'title' => 'engine'),
         'power' => array('type' => 'text', 'title' => 'power'),
         'kpp' => array('type' => 'text', 'title' => 'kpp'),
         'privod' => array('type' => 'text', 'title' => 'privod'),
         'color' => array('type' => 'text', 'title' => 'color'),
+        'info' => array ('type' => 'word', 'title' => 'Информация'),
+        'photos' => array (
+            'type' => 'images',
+            'source' => 'CarPhoto',
+            'join_field' => 'car_id',
+            'title' => 'Фотографии'
+        )
 
         /*'info' => array (
             'type' => 'subtable',

@@ -7,22 +7,40 @@
 <script type="text/javascript" src="/js/thickbox.js"></script>
 
 <script type="text/javascript">
-var picW = {$fields.img.w};
-var picH = {$fields.img.h};
-var imgField = '{$fields.img.field}';
-var imgSmallPath = '{$fields.img.small_path}';
-var imgUpload = '{$fields.img.upload}';
+var picW = {$images.w};
+var picH = {$images.h};
+var imgField = '{$images.field}';
+var imgFieldName = '{$images.field}';
+var imgSmallPath = '{$images.small_path}';
+var imgUpload = '{$images.upload}';
 
 {literal}
 var jcrop_api;
+var currentIndex = $('.images_div').length;
+
+function remove_image(ind) {
+    $('#image_div_' + ind).remove();
+    var imagesCount = parseInt($('#' + imgField).val());
+    imagesCount--;
+    $('#' + imgField).val(imagesCount);
+    if (imagesCount == 0) {
+        $('#images_photos').html('0');
+    }
+}
 
 function replaceImageContent(smallPath, bigPath, fileName) {
-    var content = '<a href="/' + bigPath + '" title="Большая картинка" class="thickbox">';
-    content += '<img src="/' + smallPath + '" alt="Увеличить картинку">';
-    content += '</a>';
-    
-    content += "<input type='hidden' name='" + imgField + "' value='" + fileName + "' />";
-    $('#' + imgField).html(content);
+    var imagesCount = parseInt($('#' + imgField).val());
+    imagesCount++;
+    $('#' + imgField).val(imagesCount);
+
+    currentIndex++;
+    var content = getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField);
+
+    if (imagesCount == 1) {
+        $('#images_' + imgField).html(content);
+    } else {
+        $('#images_' + imgField).append(content);
+    }
     
     tb_init('a.thickbox');
 }

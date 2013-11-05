@@ -108,7 +108,7 @@ class AdminBase_m extends BaseModel
 	  
 	  $id = $this->getInsertedId();
 	  
-	  if (!empty($updateFields)) 
+	  if (!empty($updateFields))
 	      return $this->updateInsertedField($object, $updateFields);
 	      
 	  return $id;
@@ -119,7 +119,7 @@ class AdminBase_m extends BaseModel
 	public function update($object) {
 	  $updateFields = $this->_getUpdateSqls($object, $sets, $identity);
 
-        $this->query = "update {$object->table} $sets $identity";
+      $this->query = "update {$object->table} $sets $identity";
 
       if(defined('DEBUG') && !defined('STOP_DEBUG')) {
           echo $this->query . "<br/>";
@@ -127,8 +127,9 @@ class AdminBase_m extends BaseModel
 
 	  $this->executeQuery($this->query);
 	  
-	  if (!empty($updateFields))
+	  if (!empty($updateFields)) {
 	      $this->updateInsertedField($object, $updateFields);
+      }
 	}
 
 	protected function updateInsertedField($object, $updateFields) {
@@ -181,7 +182,7 @@ class AdminBase_m extends BaseModel
 
         $fieldsValue = "";
 		$values = "";
-		
+
         foreach ($fields as $name => $field) {
         	if (isset($field['value'])) {
                 $fieldsValue .= $name . ",";

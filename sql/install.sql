@@ -13,17 +13,10 @@ create table cr_cars
  kpp int(11) NOT NULL,
  privod int(11) NOT NULL,
  color int(11) NOT NULL,
+ info text DEFAULT NULL,
+ photos int(11) default 0,
  PRIMARY KEY (car_id)
 
-)
-ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
-create table cr_cars_info
-(
-  i_id int(11) NOT NULL auto_increment,
-  car_id int(11) NOT NULL,
-  info text DEFAULT NULL,
-  PRIMARY KEY (i_id)
 )
 ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 

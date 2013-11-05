@@ -170,10 +170,21 @@ class BaseController extends MLM_Smarty
 	}
 	
 	public function ParsePost(&$fields) {
+        $subValues = array();
 		$postHelper = $this->_loadPostHelper();
 		
 		foreach ($fields as $key => &$post_parameter) {
-		    if (isset($post_parameter['link']) && !isset($post_parameter['value']) && $postHelper->GetFromPost($key) == null) {
+            if ($post_parameter['type'] == 'images') {
+                $post_parameter['value'] = $postHelper->GetFromPost($key);
+                $images = $postHelper->GetFromPostByMask('images_' . $key . '_');
+                if (!empty($images)) {
+                    $subValues[] = $key;
+                    $post_parameter['subvalue'] = array();
+                    foreach ($images as $image) {
+                        $post_parameter['subvalue'][] = $image;
+                    }
+                }
+            } elseif (isset($post_parameter['link']) && !isset($post_parameter['value']) && $postHelper->GetFromPost($key) == null) {
 		    } elseif ($post_parameter['type'] == 'checkbox') {
 		        $post_parameter['value'] = $postHelper->GetFromPost($key) != null ? 1 : 0;
 		    } elseif ($post_parameter['type'] == 'list') {
@@ -190,6 +201,8 @@ class BaseController extends MLM_Smarty
 			    }
 		    }
 		}
+
+        return $subValues;
 	}
 	
 	public function post()

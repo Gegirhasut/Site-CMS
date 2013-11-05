@@ -12,7 +12,7 @@
     </script>
     <form method="post">
         {foreach from=$fields item=field key=f_name}
-            {if !isset($field.nolist)}
+            {if !isset($field.nolist) and $field.type neq 'images'}
                 <th align="middle">
                     {$field.title}
                     {if isset($field.filter)}
@@ -37,7 +37,7 @@
                         {elseif $field.type eq 'select' and isset($field.autocomplete)}
                             {include file="admin/list/units/autocomplete.tpl"}
                         {else}
-                            <input type="text" name="filter_{$f_name}" value="{$filters[$f_name]}" />
+                            <input type="text" name="filter_{$f_name}" value="{$filters[$f_name]}" size="{$field.size}" maxlength="{$field.size}" />
                         {/if}
                     {/if}
                 </th>

@@ -1,7 +1,7 @@
 {foreach from=$objects item=product key=p_name}
     <tr>
         {foreach from=$fields item=field key=f_name}
-            {if $f_name neq $identity}
+            {if $f_name neq $identity and $field.type neq 'images'}
                 <td align="middle">
                     {if $field.type eq 'link'}
                         <a href="javascript:open_window('/admin/add-update/{$class}/{$product[$fields.identity]}',1000,800);">{$product[$f_name]}</a>

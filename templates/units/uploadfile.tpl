@@ -17,8 +17,13 @@ var imgUpload = '{$images.upload}';
 {literal}
 var jcrop_api;
 var currentIndex = $('.images_div').length;
+var removed = 0;
 
 function remove_image(ind) {
+    $('#remove_images').append("<input type='hidden' name='remove_image_" + removed + "' value='" + $('#image_div_' + ind + ' img').attr('src').substr(1) + "' />");
+    removed++;
+    $('#remove_images').append("<input type='hidden' name='remove_image_" + removed + "' value='" + $('#image_div_' + ind + ' a').attr('href').substr(1) + "' />");
+    removed++;
     $('#image_div_' + ind).remove();
     var imagesCount = parseInt($('#' + imgField).val());
     imagesCount--;

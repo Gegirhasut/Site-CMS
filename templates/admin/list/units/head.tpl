@@ -12,7 +12,7 @@
     </script>
     <form method="post">
         {foreach from=$fields item=field key=f_name}
-            {if !isset($field.nolist) and $field.type neq 'images'}
+            {if !isset($field.nolist)}
                 <th align="middle">
                     {$field.title}
                     {if isset($field.filter)}

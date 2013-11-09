@@ -42,6 +42,25 @@ class BaseAdminObject extends BaseAdminSecurity
           //}
         }
 
+        $this->parseSubValues($subValues, $id);
+        $this->parseRemoveImage();
+        
+        $this->caching = true;
+        
+        $this->clear_all_cache();
+        $this->assign('post', 1);
+    }
+
+    protected function parseRemoveImage() {
+        $images = $this->_loadPostHelper()->GetFromPostByMask('remove_image_');
+        foreach ($images as $image) {
+            if (file_exists($image)) {
+                unlink($image);
+            }
+        }
+    }
+
+    protected function parseSubValues($subValues, $id) {
         if (!empty($subValues)) {
             foreach ($subValues as $subValue) {
                 $values = $this->class->fields[$subValue]['subvalue'];
@@ -59,11 +78,6 @@ class BaseAdminObject extends BaseAdminSecurity
                 }
             }
         }
-        
-        $this->caching = true;
-        
-        $this->clear_all_cache();
-        $this->assign('post', 1);
     }
 
     protected function assignSelectFields($object) {

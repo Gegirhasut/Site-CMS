@@ -8,6 +8,7 @@
         0
     {/if}
 </div>
+<div id="remove_images"></div>
 <input type="hidden" name="{$name}" id="{$name}" value="{$object[$name]|@count}" />
 
 <script>

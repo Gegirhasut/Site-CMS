@@ -12,6 +12,7 @@
     <script type="text/javascript" src="/js/calendar-setup.js"></script>
     
     <link rel="stylesheet" type="text/css" href="/css/calendar.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin.css" />
 
     <script src="/js/jquery.ui.core.min.js"></script>
     <script src="/js/jquery.ui.widget.min.js"></script>

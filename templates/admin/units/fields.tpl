@@ -30,10 +30,12 @@
                 <tr>
                     {if $field.type neq 'link'}
                         {if $fields.geo.latitude neq $name && $fields.geo.longitude neq $name}
-                            <td>{$field.title}</td>
+                            <td valign="top">{$field.title}</td>
                         {/if}
                         <td>
-                            {if $field.type eq "list"}
+                            {if $field.type eq 'manyToMany'}
+                                {include file="admin/units/field_many_to_many.tpl"}
+                            {elseif $field.type eq "list"}
                                 <textarea cols="60" rows="40" name="{$name}" id="{$name}"></textarea>
                             {elseif $field.type eq "select"}
                                 {if isset($field.autocomplete)}
@@ -80,6 +82,8 @@
                                         {/foreach}
                                     {/if}
                                 />
+                            {elseif $field.type eq 'count'}
+                                {$object[$name]}
                             {else}
                                 <input id="{$name}" type="{$field.type}" name="{$name}"
                                     {if $object neq null}

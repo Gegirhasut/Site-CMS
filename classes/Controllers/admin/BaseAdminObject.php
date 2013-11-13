@@ -12,6 +12,14 @@ class BaseAdminObject extends BaseAdminSecurity
         $this->class = $this->loadClass(Router::getUrlPart(3), true);
     }
 
+    protected function executeHooks() {
+
+        if (isset($this->class->hooks['after_insert'])) {
+            $hook = $this->class->hooks['after_insert'];
+            $this->class->{$hook}($this->_adminModel);
+        }
+    }
+
     function post() {
         $operation = $this->_loadPostHelper()->GetFromPost('operation');
 
@@ -25,6 +33,7 @@ class BaseAdminObject extends BaseAdminSecurity
         if ($operation == 'update') {
         	$this->_adminModel->update($this->class);
             $id = $this->class->fields[$this->class->identity]['value'];
+            $this->insertManyToMany($id);
         }
         
         if ($operation == 'add') {
@@ -39,7 +48,14 @@ class BaseAdminObject extends BaseAdminSecurity
           	}
           } else {*/
           	$id = $this->_adminModel->insert($this->class);
+            $this->class->fields[$this->class->identity]['value'] = $id;
+            $this->insertManyToMany($id);
+
           //}
+        }
+
+        if (isset($this->class->hooks)) {
+            $this->executeHooks();
         }
 
         $this->parseSubValues($subValues, $id);
@@ -49,6 +65,29 @@ class BaseAdminObject extends BaseAdminSecurity
         
         $this->clear_all_cache();
         $this->assign('post', 1);
+    }
+
+    protected function insertManyToMany($id) {
+        foreach ($this->class->fields as $data) {
+            if ($data['type'] == 'manyToMany') {
+                $manyClass = $this->loadClass($data['join']['source']);
+                $manyClass->fields[$this->class->identity]['value'] = $id;
+
+                $this->_adminModel
+                    ->delete($manyClass->table)
+                    ->where($this->class->identity . " = $id")
+                    ->execute();
+
+                foreach ($data['values'] as $nabor) {
+                    foreach ($nabor as $field => $value) {
+                        if(isset($manyClass->fields[$field])) {
+                            $manyClass->fields[$field]['value'] = $value;
+                        }
+                    }
+                    $this->_adminModel->insert($manyClass);
+                }
+            }
+        }
     }
 
     protected function parseRemoveImage() {
@@ -111,6 +150,33 @@ class BaseAdminObject extends BaseAdminSecurity
         }
     }
 
+    protected function assignManyToManyFields($object) {
+        if(empty($object))
+            return;
+        foreach ($this->class->fields as &$field) {
+            if ($field['type'] == 'manyToMany') {
+                $joinClass = $this->loadClass($field['join']['source']);
+                $manyClass = $this->loadClass($field['many']['source']);
+
+                $fields = "{$manyClass->table}.{$field['many']['identity']}, {$manyClass->table}.{$field['many']['show_field']}";
+                foreach ($field['many']['fields'] as $f => $v) {
+                    $fields .= ",{$manyClass->table}.$f";
+                }
+                foreach ($field['join']['fields'] as $f => $v) {
+                    $fields .= ",{$joinClass->table}.$f";
+                }
+
+                $select = $this->_adminModel
+                    ->select($joinClass->table, $fields)
+                    ->join($manyClass->table . " ON {$manyClass->table}.{$field['many']['identity']} = {$joinClass->table}.{$field['many']['identity']}")
+                    ->where("{$this->class->identity} = {$object[0][$this->class->identity]}")
+                    ->fetchAll();
+
+                $field['values'] = $select;
+            }
+        }
+    }
+
     protected function assignImageFields(&$object) {
         if(empty($object))
             return;
@@ -144,8 +210,8 @@ class BaseAdminObject extends BaseAdminSecurity
         }
 
 		$this->assignSelectFields($object);
+        $this->assignManyToManyFields($object);
 
-        //print_r($this->fields);echo "<br>";
         //print_r($object[0]);echo "<br>";
 
         /*$select = Router::getParams('select');
@@ -156,6 +222,7 @@ class BaseAdminObject extends BaseAdminSecurity
             $this->assignImageFields($object);
             $this->assign('images', $this->class->images);
         }
+        //print_r($this->class->fields);echo "<br>";
         $this->assign('fields', $this->class->fields);
         $this->assign('object', empty($object) ? null : $object[0]);
         $this->assign('identity', $this->class->identity);

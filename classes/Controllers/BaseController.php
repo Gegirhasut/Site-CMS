@@ -174,7 +174,30 @@ class BaseController extends MLM_Smarty
 		$postHelper = $this->_loadPostHelper();
 		
 		foreach ($fields as $key => &$post_parameter) {
-            if ($post_parameter['type'] == 'images') {
+            if ($post_parameter['type'] == 'manyToMany') {
+                $sostav = $postHelper->GetFromPostByMask('many_sostav_' . $post_parameter['many']['identity'] . '_' . $key . "_");
+                $join_fields = array();
+                foreach ($post_parameter['join']['fields'] as $field => $desc) {
+                    $join_fields[$field] = $postHelper->GetFromPostByMask('many_join_' . $field . "_");
+                }
+                $many_fields = array();
+                foreach ($post_parameter['many']['fields'] as $field => $desc) {
+                    $many_fields[$field] = $postHelper->GetFromPostByMask('many_field_' . $field . "_");
+                }
+                $value = array ();
+                foreach ($sostav as $k => $many) {
+                    $value[] = array ($post_parameter['many']['identity'] => $many);
+                    $keyIndex = str_replace('many_sostav_' . $post_parameter['many']['identity'] . '_' . $key . '_', '', $k);
+                    foreach ($post_parameter['join']['fields'] as $field => $desc) {
+                        $value[count($value) - 1][$field] = $join_fields[$field]['many_join_' . $field . "_" . $keyIndex];
+                    }
+
+                    foreach ($post_parameter['many']['fields'] as $field => $desc) {
+                        $value[count($value) - 1][$field] = $many_fields[$field]['many_field_' . $field . "_" . $keyIndex];
+                    }
+                }
+                $post_parameter['values'] = $value;
+            } elseif ($post_parameter['type'] == 'images') {
                 $post_parameter['value'] = $postHelper->GetFromPost($key);
                 $images = $postHelper->GetFromPostByMask('images_' . $key . '_');
                 $post_parameter['subvalue'] = array();
@@ -193,8 +216,11 @@ class BaseController extends MLM_Smarty
 		        $object['list_key'] = $key;
 		    } else {
 			    $post_parameter['value'] = $postHelper->GetFromPost($key);
-			    if ($post_parameter['value'] == null && !isset($post_parameter['identity'])) {
-			      if (isset($post_parameter['integer'])) {
+                if ($post_parameter['value'] == null && !isset($post_parameter['identity'])) {
+                  if (isset($post_parameter['default'])) {
+                      $post_parameter['value'] = $post_parameter['default'];
+                  }
+                  elseif (isset($post_parameter['integer'])) {
 			          $post_parameter['value'] = "0";
 			      } else {
 		              $post_parameter['value'] = "NULL";

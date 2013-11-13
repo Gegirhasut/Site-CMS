@@ -12,7 +12,7 @@ function arrayToJson($array)
 		if (is_array($value)) {
 			$json .= arrayToJson($value) . ", ";
 		} else {
-			$json .= '"' . $value . '",';
+			$json .= '"' . str_replace("\n", "", addslashes($value)) . '",';
 		}
 	}
 	if ($jsonArray) {

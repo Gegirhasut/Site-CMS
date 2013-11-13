@@ -9,6 +9,7 @@
 <script type="text/javascript" src="/js/calendar-setup.js"></script>
 
 <link rel="stylesheet" type="text/css" href="/css/calendar.css" />
+<link rel="stylesheet" type="text/css" href="/css/admin.css" />
 
     <script>
      {if isset($post)}
@@ -32,8 +33,6 @@
        </td>
          {include file="admin/units/field_upload.tpl"}
       </tr>
-
-        {include file="admin/units/field_many_to_many.tpl"}
 
      </table>
 

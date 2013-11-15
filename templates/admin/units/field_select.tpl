@@ -12,9 +12,7 @@
 {foreach from=$field.values item=option}
     <option
             value="{$option[$field.identity]|escape}"
-            {if $object neq null and $option[$field.identity] eq $object[$field.identity]}
-                selected="selected"
-            {elseif $select eq $option[$field.identity]}
+            {if $object neq null and $option[$field.identity] eq $object[$name]}
                 selected="selected"
             {/if}
 

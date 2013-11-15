@@ -15,20 +15,23 @@ class Car {
 
     public $fields = array(
         'car_id' => array('type' => 'text', 'nolist' => 1),
+        'source' => array('type' => 'text', 'title' => 'Источник'),
+        'source_id' => array('type' => 'text', 'title' => 'ID'),
         'probeg' => array('type' => 'number', 'title' => 'Пробег', 'check' => 'empty', 'filter' => 1),
         'city' => array(
             'type' => 'select',
             'source' => 'City',
             'title' => 'Город',
-            'show_field' => 'city',
-            'identity' => 'id',
+            'show_field' => 'name',
+            'identity' => 'city_id',
+            'autocomplete' => 1,
             'filter' => 1
         ),
         'u_id' => array (
             'type' => 'select',
             'source' => 'User',
             'title' => 'Юзер',
-            'show_field' => 'name',
+            'show_field' => 'phone',
             'identity' => 'u_id',
             'autocomplete' => 1,
             'filter' => 1
@@ -40,10 +43,19 @@ class Car {
         'kuzov' => array('type' => 'text', 'title' => 'kuzov'),
         'engine' => array('type' => 'text', 'title' => 'engine'),
         'power' => array('type' => 'text', 'title' => 'power'),
-        'kpp' => array('type' => 'text', 'title' => 'kpp'),
+        //'kpp' => array('type' => 'text', 'title' => 'kpp'),
+        'kpp' => array(
+            'type' => 'select',
+            'source' => 'KPP',
+            'title' => 'КПП',
+            'show_field' => 'kpp',
+            'identity' => 'id',
+            'filter' => 1
+        ),
+        'kpp_count' => array ('type' => 'text', 'title' => 'kppcnt'),
         'privod' => array('type' => 'text', 'title' => 'privod'),
         'color' => array('type' => 'text', 'title' => 'color'),
-        'info' => array ('type' => 'word', 'title' => 'Информация'),
+        'info' => array ('type' => 'word', 'title' => 'Информация', 'nolist' => 1),
         'photos' => array (
             'type' => 'images',
             'source' => 'CarPhoto',

@@ -145,8 +145,10 @@ class BaseAdminObjects extends BaseAdminSecurity
                         if (empty($objects))
                             continue;
                         $ids = array();
+                        //print_r($objects);exit;
                         foreach ($objects as $obj) {
-                            $ids[$obj[$value['identity']]] = $obj[$value['identity']];
+                            //$ids[$obj[$value['identity']]] = $obj[$value['identity']];
+                            $ids[$obj[$key]] = $obj[$key];
                         }
 
                         $ids = implode(',', $ids);

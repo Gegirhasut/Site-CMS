@@ -57,7 +57,8 @@ class BaseAdminObject extends BaseAdminSecurity
         if (isset($this->class->hooks)) {
             $this->executeHooks();
         }
-
+        //print_r($subValues);
+        //print_r($this->class);
         $this->parseSubValues($subValues, $id);
         $this->parseRemoveImage();
         
@@ -185,7 +186,8 @@ class BaseAdminObject extends BaseAdminSecurity
 
         $subValues = $this->_adminModel
             ->select($subClass->table)
-            ->where($this->class->identity . " = {$object[0][$this->class->identity]['value']}")
+            //->where($this->class->identity . " = {$object[0][$this->class->identity]['value']}")
+            ->where($this->class->identity . " = {$object[0][$this->class->identity]}")
             ->fetchAll();
 
         $object[0][$this->class->images['field']] = $subValues;
@@ -210,6 +212,8 @@ class BaseAdminObject extends BaseAdminSecurity
         }
 
 		$this->assignSelectFields($object);
+        //print_r($this->class->fields);
+        //exit;
         $this->assignManyToManyFields($object);
 
         //print_r($object[0]);echo "<br>";
@@ -223,6 +227,7 @@ class BaseAdminObject extends BaseAdminSecurity
             $this->assign('images', $this->class->images);
         }
         //print_r($this->class->fields);echo "<br>";
+        //print_r($this->class->fields['kpp']);
         $this->assign('fields', $this->class->fields);
         $this->assign('object', empty($object) ? null : $object[0]);
         $this->assign('identity', $this->class->identity);

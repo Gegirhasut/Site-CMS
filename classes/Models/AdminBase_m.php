@@ -43,6 +43,16 @@ class AdminBase_m extends BaseModel
         return $this;
     }
 
+    public function orderBy($field, $asc = true) {
+        if ($asc) {
+            $this->query .= " ORDER BY $field ASC";
+        } else {
+            $this->query .= " ORDER BY $field DESC";
+        }
+
+        return $this;
+    }
+
     public function execute() {
         if(defined('DEBUG') && !defined('STOP_DEBUG')) {
             echo $this->query . "<br/>";

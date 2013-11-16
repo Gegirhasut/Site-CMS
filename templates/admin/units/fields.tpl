@@ -28,7 +28,7 @@
         {foreach from=$fields item=field key=name}
             {if $name neq $identity}
                 <tr>
-                    {if $field.type neq 'link'}
+                    {if $field.type neq 'link' && $field.type neq 'preview'}
                         {if $fields.geo.latitude neq $name && $fields.geo.longitude neq $name}
                             <td valign="top">{$field.title}</td>
                         {/if}

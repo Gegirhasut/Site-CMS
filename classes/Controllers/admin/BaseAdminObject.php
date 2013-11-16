@@ -25,8 +25,8 @@ class BaseAdminObject extends BaseAdminSecurity
         $operation = $this->_loadPostHelper()->GetFromPost('operation');
 
         $subValues = $this->ParsePost($this->class->fields);
-        /*print_r($this->class->fields);
-        print_r($subValues);
+        //print_r($this->class->fields);exit;
+        /*print_r($subValues);
         exit;*/
 
         $this->_adminModel = $this->_getModelByName('AdminBase');
@@ -38,21 +38,9 @@ class BaseAdminObject extends BaseAdminSecurity
         }
         
         if ($operation == 'add') {
-          /*if (isset($this->class->fields['list_key'])) {
-          	$values = $this->class->fields[$this->class->fields['list_key']]['value'];
-          	$values = explode("\r\n", $values);
-          	foreach ($values as $value) {
-          		if (!empty($value)) {
-                    $this->class->fields[$this->class->fields['list_key']]['value'] = $value;
-                    $this->_adminModel->insert($this->class);
-          		}
-          	}
-          } else {*/
           	$id = $this->_adminModel->insert($this->class);
             $this->class->fields[$this->class->identity]['value'] = $id;
             $this->insertManyToMany($id);
-
-          //}
         }
 
         if (isset($this->class->hooks)) {

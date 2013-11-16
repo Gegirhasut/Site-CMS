@@ -174,7 +174,10 @@ class BaseController extends MLM_Smarty
 		$postHelper = $this->_loadPostHelper();
 		
 		foreach ($fields as $key => &$post_parameter) {
-            if ($post_parameter['type'] == 'manyToMany') {
+            if ($post_parameter['type'] == 'preview') {
+                // photo preview sets in next sections for manyToMany image parser
+            }
+            elseif ($post_parameter['type'] == 'manyToMany') {
                 $sostav = $postHelper->GetFromPostByMask('many_sostav_' . $post_parameter['many']['identity'] . '_' . $key . "_");
                 $join_fields = array();
                 foreach ($post_parameter['join']['fields'] as $field => $desc) {
@@ -204,8 +207,15 @@ class BaseController extends MLM_Smarty
                 $subValues[] = $key;
 
                 if (!empty($images)) {
+                    $firstImage = null;
                     foreach ($images as $image) {
                         $post_parameter['subvalue'][] = $image;
+                        if (is_null($firstImage)) {
+                            $firstImage = $image;
+                        }
+                    }
+                    if(isset($post_parameter['preview'])) {
+                        $fields[$post_parameter['preview']]['value'] = $firstImage;
                     }
                 }
             } elseif (isset($post_parameter['link']) && !isset($post_parameter['value']) && $postHelper->GetFromPost($key) == null) {

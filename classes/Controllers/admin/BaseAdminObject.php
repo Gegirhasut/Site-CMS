@@ -9,6 +9,7 @@ class BaseAdminObject extends BaseAdminSecurity
     protected $_adminModel;
 
     public function __construct() {
+        parent::__construct();
         $this->class = $this->loadClass(Router::getUrlPart(3), true);
     }
 
@@ -121,7 +122,7 @@ class BaseAdminObject extends BaseAdminSecurity
     }
 
     protected function assignSelectFields($object) {
-        foreach ($this->class->fields as &$field) {
+        foreach ($this->class->fields as $key => &$field) {
             if ($field['type'] == 'select') {
                 if (!isset($field['autocomplete'])) {
                     if (isset($field['source'])) {
@@ -142,7 +143,7 @@ class BaseAdminObject extends BaseAdminSecurity
                     $source_class = $this->loadClass($field['source']);
                     $select = $this->_adminModel
                         ->select($source_class->table, "{$field['show_field']}")
-                        ->where("{$field['identity']} = {$object[0][$field['identity']]}")
+                        ->where("{$field['identity']} = {$object[0][$key]}")
                         ->fetchAll();
 
                     $field['values'] = $select[0][$field['show_field']];

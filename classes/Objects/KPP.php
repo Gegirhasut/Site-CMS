@@ -1,18 +1,11 @@
 <?php
 class KPP {
+    public $table = "cr_car_kpps";
+
+    public $identity = 'kpp_id';
+
     public $fields = array(
-        'id' => array ('type' => 'text', 'title' => 'id'),
-        'kpp' => array ('type' => 'text', 'title' => 'Gears')
-    );
-
-    public $values = array (
-        1 => array ('id' => 1, 'kpp' => 'Auto'),
-        2 => array ('id' => 2, 'kpp' => 'Manual'),
-    );
-
-    public static $valueToId = array (
-        'auto' => 1,
-        'automatic' => 1,
-        'manual' => 2,
+        'kpp_id' => array('type' => 'text','nolist' => 1),
+        'kpp' => array('type' => 'text', 'title' => 'КПП')
     );
 }

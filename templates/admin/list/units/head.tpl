@@ -4,7 +4,7 @@
         {literal}
             function callCallFunctions() {
                 for(var i = 0; i< callFunctions.length; i++) {
-                    callFunctions[i]();
+                    eval(callFunctions[i] +"()");
                 }
                 return true;
             }

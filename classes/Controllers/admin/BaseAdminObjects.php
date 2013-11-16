@@ -13,6 +13,7 @@ class BaseAdminObjects extends BaseAdminSecurity
     protected $_adminModel;
 
     public function __construct() {
+        parent::__construct();
         $this->class = $this->loadClass(Router::getUrlPart(3), true);
     }
     
@@ -85,6 +86,7 @@ class BaseAdminObjects extends BaseAdminSecurity
           ->select($this->class->table, 'SQL_CALC_FOUND_ROWS *');
 
       $number_operators = array();
+
       foreach ($this->_filters as $field => $value) {
           if (!empty($value)) {
               if ($this->class->fields[$field]['type'] == 'number') {

@@ -22,7 +22,7 @@ class Car {
             'type' => 'select',
             'source' => 'City',
             'title' => 'Город',
-            'show_field' => 'name',
+            'show_field' => 'city_name',
             'identity' => 'city_id',
             'autocomplete' => 1,
             'filter' => 1
@@ -36,7 +36,34 @@ class Car {
             'autocomplete' => 1,
             'filter' => 1
         ),
-
+        'car_model_id' => array(
+            'type' => 'select',
+            'source' => 'CarModel',
+            'title' => 'Модель',
+            'show_field' => 'car_model',
+            'identity' => 'car_model_id',
+            'autocomplete' => 1,
+            'filter' => 1
+        ),
+        'kpp_id' => array(
+            'type' => 'select',
+            'source' => 'KPP',
+            'title' => 'КПП',
+            'show_field' => 'kpp',
+            'identity' => 'kpp_id',
+            'filter' => 1
+        ),
+        'color' => array(
+            'type' => 'select',
+            'source' => 'Color',
+            'title' => 'Цвет',
+            'show_field' => 'color',
+            'identity' => 'color_id',
+            'autocomplete' => 1,
+            'filter' => 1
+        ),
+        'kpp_count' => array ('type' => 'text', 'title' => 'kppcnt'),
+        'full_car_name' => array('type' => 'text', 'title' => 'Полное название', 'nolist' => 1),
         'year' => array('type' => 'number', 'title' => 'year', 'filter' => 1, 'size' => 4),
         'price' => array('type' => 'number', 'title' => 'price', 'filter' => 1, 'size' => 10),
         'torg' => array ('type' => 'checkbox', 'title' => 'Торг'),
@@ -44,17 +71,7 @@ class Car {
         'engine' => array('type' => 'text', 'title' => 'engine'),
         'power' => array('type' => 'text', 'title' => 'power'),
         //'kpp' => array('type' => 'text', 'title' => 'kpp'),
-        'kpp' => array(
-            'type' => 'select',
-            'source' => 'KPP',
-            'title' => 'КПП',
-            'show_field' => 'kpp',
-            'identity' => 'id',
-            'filter' => 1
-        ),
-        'kpp_count' => array ('type' => 'text', 'title' => 'kppcnt'),
         'privod' => array('type' => 'text', 'title' => 'privod'),
-        'color' => array('type' => 'text', 'title' => 'color'),
         'info' => array ('type' => 'word', 'title' => 'Информация', 'nolist' => 1),
         'photos' => array (
             'type' => 'images',

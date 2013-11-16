@@ -44,6 +44,8 @@
 
     function call{$name}() {ldelim}
         var data = availableObjectsData{$name};
+        if (typeof data.objects === "undefined" )
+            return;
         for (var i = 0; i < data.objects.length; i++)
         {ldelim}
             if (data.objects[i]['{$field.show_field}'] == $( "#filter_{$name}").val())

@@ -35,6 +35,8 @@
 
     function call{$f_name}() {ldelim}
         var data = availableObjectsData{$f_name};
+        if (typeof data.objects === "undefined" )
+            return;
         for (var i = 0; i < data.objects.length; i++) {ldelim}
             if (data.objects[i]['{$field.show_field}'] == $( "#{$f_name}").val()) {ldelim}
                 $( "#filter_{$f_name}").val((data.objects[i]['{$field.identity}']));
@@ -42,5 +44,5 @@
         {rdelim}
     }
 
-    callFunctions[callFunctions.length] = call{$f_name};
+    callFunctions[callFunctions.length] = 'call{$f_name}';
 </script>

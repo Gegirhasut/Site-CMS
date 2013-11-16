@@ -7,7 +7,7 @@ class City {
 
     public $fields = array(
         'city_id' => array('type' => 'text','nolist' => 1),
-        'name' => array('type' => 'text', 'title' => 'Название')
+        'city_name' => array('type' => 'text', 'title' => 'Название')
     );
 }
 

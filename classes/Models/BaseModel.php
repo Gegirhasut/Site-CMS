@@ -39,7 +39,7 @@ class BaseModel
       	  	if ($_SERVER['SERVER_NAME'] == 'localhost') {
           		echo '<b>Could not run query:</b> ' . $query . '<br/><b>Error message</b>: ' . $mysql_error;
       	  	} else {
-          		mail('max077@mail.ru', '[arktida] SQL error', $query . print_r($_SERVER, true) . print_r(debug_backtrace(), true) . print_r($_COOKIE, true) );
+          		mail('max077@mail.ru', '[cars-cyprus.com] SQL error', $query . "<br>" . $mysql_error . "<br>" . print_r($_SERVER, true) . print_r(debug_backtrace(), true) . print_r($_COOKIE, true) );
       	  	}
       	  }
     	  return false;

@@ -137,7 +137,11 @@ class BaseAdminObjects extends BaseAdminSecurity
                     // Exists values, than object doesn't store in database
                     $value['values'] = $select_class->values;
                     foreach ($objects as $obj_key => &$object) {
-                        $object[$key] = $value['values'][$object[$key]][$value['show_field']];
+                        if ($object[$key] != 0) {
+                            $object[$key] = $value['values'][$object[$key]][$value['show_field']];
+                        } else {
+                            $object[$key] = '';
+                        }
                     }
                 } else {
                     // Not exists values, than object stores in database
@@ -162,7 +166,11 @@ class BaseAdminObjects extends BaseAdminSecurity
                         $value['values'] = $values;
 
                         foreach ($objects as $obj_key => &$object) {
-                            $object[$key] = $value['values'][$object[$key]][$value['show_field']];
+                            if (isset ($value['values'][$object[$key]])) {
+                                $object[$key] = $value['values'][$object[$key]][$value['show_field']];
+                            } else {
+                                $object[$key] = '-';
+                            }
                         }
                     } else {
                         $values = $this->_adminModel

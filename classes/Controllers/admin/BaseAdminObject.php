@@ -134,7 +134,9 @@ class BaseAdminObject extends BaseAdminSecurity
                         ->where("{$field['identity']} = {$object[0][$key]}")
                         ->fetchAll();
 
-                    $field['values'] = $select[0][$field['show_field']];
+                    if (!empty($select[0])) {
+                        $field['values'] = $select[0][$field['show_field']];
+                    }
                 }
             }
         }

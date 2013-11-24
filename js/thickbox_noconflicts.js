@@ -11,7 +11,7 @@ var tb_pathToImage = "/images/loadingAnimation.gif";
 
 //on page load call tb_init
 jQuery(document).ready(function(){   
-	tb_init('a.thickbox, area.thickbox, input.thickbox');//pass where to apply thickbox
+	//tb_init('a.thickbox, area.thickbox, input.thickbox');//pass where to apply thickbox
 	imgLoader = new Image();// preload image
 	imgLoader.src = tb_pathToImage;
 });
@@ -76,7 +76,7 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 			TB_imageCount = "";
 			TB_FoundURL = false;
 			if(imageGroup){
-				TB_TempArray = jQuery("a[@rel="+imageGroup+"]").get();
+				TB_TempArray = jQuery("a[rel="+imageGroup+"]").get();
 				for (TB_Counter = 0; ((TB_Counter < TB_TempArray.length) && (TB_NextHTML === "")); TB_Counter++) {
 					var urlTypeTemp = TB_TempArray[TB_Counter].href.toLowerCase().match(urlString);
 						if (!(TB_TempArray[TB_Counter].href == url)) {						
@@ -125,7 +125,7 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 			
 			TB_WIDTH = imageWidth + 30;
 			TB_HEIGHT = imageHeight + 60;
-			jQuery("#TB_window").append("<a href='' id='TB_ImageOff' title='Закрыть'><img id='TB_Image' src='"+url+"' width='"+imageWidth+"' height='"+imageHeight+"' alt='"+caption+"'/></a>" + "<div id='TB_caption'>"+caption+"<div id='TB_secondLine'>" + TB_imageCount + TB_PrevHTML + TB_NextHTML + "</div></div><div id='TB_closeWindow'><a href='#' id='TB_closeWindowButton' title='Закрыть'>Закрыть</a> или Esc</div>"); 		
+			jQuery("#TB_window").append("<a href='' id='TB_ImageOff' title='Next Image'><img id='TB_Image' src='"+url+"' width='"+imageWidth+"' height='"+imageHeight+"' alt='"+caption+"'/></a>" + "<div id='TB_caption'>"+caption+"<div id='TB_secondLine'>" + TB_imageCount + TB_PrevHTML + TB_NextHTML + "</div></div><div id='TB_closeWindow'><a href='#' id='TB_closeWindowButton' title='Close'>Close</a> or Esc</div>");
 			
 			jQuery("#TB_closeWindowButton").click(tb_remove);
 			
@@ -174,7 +174,7 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 			
 			tb_position();
 			jQuery("#TB_load").remove();
-			jQuery("#TB_ImageOff").click(tb_remove);
+			jQuery("#TB_ImageOff").click(goNext);
 			jQuery("#TB_window").css({display:"block"}); //for safari using css instead of show
 			};
 			

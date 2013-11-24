@@ -8,13 +8,14 @@
 /* ---------->>> thickbox specific link and font settings <<<------------------------------------------------------*/
 /* ----------------------------------------------------------------------------------------------------------------*/
 #TB_window {
-	font: 12px Arial, Helvetica, sans-serif;
+	font: 14px Arial, Helvetica, sans-serif;
 	color: #333333;
 }
 
 #TB_secondLine {
-	font: 10px Arial, Helvetica, sans-serif;
+	font: 14px Arial, Helvetica, sans-serif;
 	color:#666666;
+    padding-top:5px;
 }
 
 #TB_window a:link {color: #666666;}
@@ -61,8 +62,8 @@
 }
 
 * html #TB_window { /* ie6 hack */
-position: absolute;
-margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = document.documentElement && document.documentElement.scrollTop || document.body.scrollTop) + 'px');
+    position: absolute;
+    margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = document.documentElement && document.documentElement.scrollTop || document.body.scrollTop) + 'px');
 }
 
 #TB_window img#TB_Image {
@@ -75,7 +76,7 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 }
 
 #TB_caption{
-	height:25px;
+	height:37px;
 	padding:7px 30px 10px 25px;
 	float:left;
 }

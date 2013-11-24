@@ -8,7 +8,7 @@ class Main_c extends BaseAdminSecurity
 
         $adminModel = $this->_getModelByName('AdminBase');
 
-        if(DEBUG) {
+        if(defined('DEBUG')) {
             define('STOP_DEBUG', true);
         }
 

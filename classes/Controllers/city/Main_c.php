@@ -12,16 +12,19 @@ require_once('classes/Objects/Saloon.php');
 class Main_c extends BaseAppController
 {
     public $car;
-    protected $_title = 'Cars in Cyprus | Buy and Sell';
-    protected $_description = 'Cars in Cyprus | Buy and Sell';
-    protected $_keywords = 'Cars in Cyprus | Buy and Sell';
 
     protected function getCars () {
-        if (isset($_SESSION['filters'])) {
-            unset($_SESSION['filters']['city_id']);
-            unset($_SESSION['filters']['city']);
+        $city = Router::getUrlPart(2);
+        $city_id = (int) Router::getUrlPart(3);
+        if (!isset($_SESSION['filters'])) {
+            $_SESSION['filters'] = array();
         }
+        $_SESSION['filters']['city_id'] = $city_id;
+        $_SESSION['filters']['city'] = $city;
 
+        $this->_title = "Buy cars in $city, Cyprus";
+        $this->_description = "Buy and sell cars in $city. Cyprus cars.";
+        $this->_keywords = "cars $city, cars in $city, buy car in $city";
 
         $this->car = new Car();
         $carModel = new CarModel();
@@ -42,16 +45,17 @@ class Main_c extends BaseAppController
             ->join("{$city->table} ON {$city->table}.city_id = {$this->car->table}.city")
             ->join("{$color->table} ON {$color->table}.color_id = {$this->car->table}.color")
             ->join("{$kpp->table} ON {$kpp->table}.kpp_id = {$this->car->table}.kpp_id")
-            ->join("{$user->table} ON {$user->table}.u_id = {$this->car->table}.u_id");
+            ->join("{$user->table} ON {$user->table}.u_id = {$this->car->table}.u_id")
+            ->where("{$city->table}.city_id =" . $city_id);
 
         $filterWhere = $this->assignCarsFilters();
         if(!empty($filterWhere)) {
             $adminModel->where($filterWhere);
         }
 
-        $orderFields = $this->assignCarsOrders($adminModel);
+        $orderFields = $this->assignCarsOrders();
 
-        $cars = $adminModel->orderByNoDirection($orderFields, false)
+        $cars = $adminModel->orderByNoDirection($orderFields)
             ->limit(($currentPage - 1) * $this->_countOnPage, $this->_countOnPage)
             ->fetchAll($this->car->identity);
 

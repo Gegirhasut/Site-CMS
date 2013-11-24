@@ -24,6 +24,15 @@ class Car {
             'autocomplete' => 1,
             'filter' => 1
         ),
+        'car_submodel_id' => array(
+            'type' => 'select',
+            'source' => 'CarSubmodel',
+            'title' => 'М',
+            'show_field' => 'car_submodel',
+            'identity' => 'car_submodel_id',
+            'autocomplete' => 1,
+            'filter' => 1
+        ),
         'year' => array('type' => 'number', 'title' => 'year', 'filter' => 1, 'size' => 4),
         'price' => array('type' => 'number', 'title' => 'price', 'filter' => 1, 'size' => 10),
         'probeg' => array('type' => 'number', 'title' => 'Пробег', 'check' => 'empty', 'filter' => 1),
@@ -65,8 +74,24 @@ class Car {
             'filter' => 1
         ),
         'full_car_name' => array('type' => 'text', 'title' => 'Полное название', 'nolist' => 1),
-        'engine' => array('type' => 'text', 'title' => 'engine'),
+        'engineShort' => array('type' => 'text', 'title' => 'engine'),
+        'carburation' => array('type' => 'text', 'title' => 'carb'),
         'power' => array('type' => 'text', 'title' => 'power'),
+        'powerType' => array(
+            'type' => 'select',
+            'source' => 'PowerType',
+            'title' => 'PT',
+            'show_field' => 'pt',
+            'identity' => 'id'
+        ),
+        'saloon' => array(
+            'type' => 'select',
+            'source' => 'Saloon',
+            'title' => 'Saloon',
+            'show_field' => 'saloon',
+            'identity' => 'id',
+            'filter' => 1
+        ),
         'info' => array ('type' => 'word', 'title' => 'Информация', 'nolist' => 1),
         'photos' => array (
             'type' => 'images',
@@ -78,7 +103,6 @@ class Car {
         'preview_photo' => array ('type' => 'preview', 'nolist' => 1),
         'privod' => array('type' => 'text', 'title' => 'privod'),
         'torg' => array ('type' => 'checkbox', 'title' => 'Торг'),
-        'kuzov' => array('type' => 'text', 'title' => 'kuzov'),
         'source' => array('type' => 'text', 'title' => 'Источник'),
         'source_id' => array('type' => 'text', 'title' => 'ID'),
     );

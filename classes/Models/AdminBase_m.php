@@ -5,16 +5,6 @@ class AdminBase_m extends BaseModel
 {
     protected $query = "";
 
-/*    protected $instance = null;
-
-    public static function getInstance() {
-        if (is_null(self::$instance)) {
-            self::$instance = new Database();
-        }
-
-        return self::$instance;
-    }*/
-
 	public function select($table, $fields = '*') {
 	  $this->query = "select $fields from $table";
 	    
@@ -37,8 +27,20 @@ class AdminBase_m extends BaseModel
         return $this;
     }
 
-    public function limit($l1, $l2) {
-        $this->query .= " LIMIT $l1, $l2";
+    public function rightJoin($join) {
+        $this->query .= " RIGHT JOIN $join";
+
+        return $this;
+    }
+
+    public function leftJoin($join) {
+        $this->query .= " LEFT JOIN $join";
+
+        return $this;
+    }
+
+    public function limit($l1, $l2 = null) {
+        $this->query .= is_null($l2) ? " LIMIT $l1" : " LIMIT $l1, $l2";
 
         return $this;
     }
@@ -49,6 +51,12 @@ class AdminBase_m extends BaseModel
         } else {
             $this->query .= " ORDER BY $field DESC";
         }
+
+        return $this;
+    }
+
+    public function orderByNoDirection($field) {
+        $this->query .= " ORDER BY $field";
 
         return $this;
     }

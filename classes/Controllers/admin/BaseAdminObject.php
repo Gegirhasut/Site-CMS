@@ -55,6 +55,7 @@ class BaseAdminObject extends BaseAdminSecurity
         
         $this->clear_all_cache();
         $this->assign('post', 1);
+        $this->class = $this->loadClass(Router::getUrlPart(3), true);
     }
 
     protected function insertManyToMany($id) {
@@ -106,6 +107,22 @@ class BaseAdminObject extends BaseAdminSecurity
                     $this->_adminModel->insert($subClass);
                 }
             }
+        }
+    }
+
+    protected function assignGeoFields(&$object) {
+        $geoFieldName = null;
+
+        foreach ($this->class->fields as $key => $field) {
+            if ($field['type'] == 'geo') {
+                $geoFieldName = $key;
+            }
+        }
+
+        if (!is_null($geoFieldName)) {
+            $geoField = $this->class->fields[$geoFieldName];
+            $this->class->fields[$geoFieldName]['fields']['latitude']['value'] = $object[0][$geoField['fields']['latitude']['name']];
+            $this->class->fields[$geoFieldName]['fields']['longitude']['value'] = $object[0][$geoField['fields']['longitude']['name']];
         }
     }
 
@@ -202,9 +219,10 @@ class BaseAdminObject extends BaseAdminSecurity
               ->fetchAll();
         }
 
+        //print_r($object);exit;
+
+        $this->assignGeoFields($object);
 		$this->assignSelectFields($object);
-        //print_r($this->class->fields);
-        //exit;
         $this->assignManyToManyFields($object);
 
         //print_r($object[0]);echo "<br>";

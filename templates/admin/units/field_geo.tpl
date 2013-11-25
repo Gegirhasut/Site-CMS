@@ -1,4 +1,4 @@
-{if isset($fields.geo)}
+{if isset($fields.geo) && $fields.geo.geo_type eq 'yandex'}
     <div id="ymaps-map-id_13401264085565651343" style="width: 350px; height: 300px;"></div>
 
     <script type="text/javascript" src="http://api-maps.yandex.ru/2.0/?coordorder=longlat&load=package.full&wizard=constructor&lang=ru-RU&onload=loadMap"></script>

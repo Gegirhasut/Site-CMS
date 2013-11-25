@@ -172,7 +172,23 @@ class BaseController extends MLM_Smarty
 	public function ParsePost(&$fields) {
         $subValues = array();
 		$postHelper = $this->_loadPostHelper();
-		
+
+        $geoFieldKey = null;
+        foreach ($fields as $key => $post_parameter) {
+            if ($post_parameter['type'] == 'geo') {
+                // just skip the geo type
+                $geoFieldKey = $key;
+            }
+        }
+        if (!is_null($geoFieldKey)) {
+            $geoField = $fields[$geoFieldKey];
+            $latName = $geoField['fields']['latitude']['name'];
+            $longName = $geoField['fields']['longitude']['name'];
+            $fields[$latName] = array ('type' => 'text');
+            $fields[$longName] = array ('type' => 'text');
+            unset($fields[$geoFieldKey]);
+        }
+
 		foreach ($fields as $key => &$post_parameter) {
             if ($post_parameter['type'] == 'preview') {
                 // photo preview sets in next sections for manyToMany image parser
@@ -238,6 +254,8 @@ class BaseController extends MLM_Smarty
 			    }
 		    }
 		}
+
+        print_r($fields);
 
         return $subValues;
 	}

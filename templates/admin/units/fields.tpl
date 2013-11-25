@@ -33,7 +33,11 @@
                             <td valign="top">{$field.title}</td>
                         {/if}
                         <td>
-                            {if $field.type eq 'manyToMany'}
+                            {if $field.type eq 'geo'}
+                                {if $field.geo_type eq 'google'}
+                                    {include file="admin/units/field_geo_google.tpl"}
+                                {/if}
+                            {elseif $field.type eq 'manyToMany'}
                                 {include file="admin/units/field_many_to_many.tpl"}
                             {elseif $field.type eq "list"}
                                 <textarea cols="60" rows="40" name="{$name}" id="{$name}"></textarea>

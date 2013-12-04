@@ -172,7 +172,9 @@ class BaseAdminObjects extends BaseAdminSecurity
                         $value['values'] = $values;
 
                         foreach ($objects as $obj_key => &$object) {
-                            $object[$key] = $values[$object[$key]][$value['show_field']];
+                            if (isset ($object[$key])) {
+                                $object[$key] = $values[$object[$key]][$value['show_field']];
+                            }
                         }
                     }
                 }

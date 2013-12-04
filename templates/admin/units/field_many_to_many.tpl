@@ -9,16 +9,21 @@
 
     function add{$name} () {ldelim}
         var html = "<div id='sostav_{$name}_" + count{$name} + "'>";
-        html += $('#filter_{$name}').val() + ' : ';
+        html += $('#filter_{$name}').val();
+        {if isset($field.many.fields)}
+            html += ' : ';
+        {/if}
         html += "<input type='hidden' name='many_sostav_{$field.many.identity}_{$name}_" + count{$name} + "' value='" + $('#{$name}').val() + "' />";
         $('#filter_{$name}').val('');
-        html += "[ ";
-        {foreach from=$field.many.fields item=many_field key=many_field_name}
-        html += $('#many_field_{$many_field_name}').html() + " {$many_field.title_add} ";
-        html += "<input type='hidden' name='many_field_{$many_field_name}_" + count{$name} + "' value='" + $('#many_field_{$many_field_name}').html() + "' />";
-        $('#many_field_{$many_field_name}').html('');
-        {/foreach}
-        html += "] ";
+        {if isset($field.many.fields)}
+            html += "[ ";
+            {foreach from=$field.many.fields item=many_field key=many_field_name}
+            html += $('#many_field_{$many_field_name}').html() + " {$many_field.title_add} ";
+            html += "<input type='hidden' name='many_field_{$many_field_name}_" + count{$name} + "' value='" + $('#many_field_{$many_field_name}').html() + "' />";
+            $('#many_field_{$many_field_name}').html('');
+            {/foreach}
+            html += "] ";
+        {/if}
         {foreach from=$field.join.fields item=join_field key=join_field_name}
         html += $('#filter_{$join_field_name}').val() + " {$join_field.title_add}";
         html += "<input type='hidden' name='many_join_{$join_field_name}_" + count{$name} + "' value='" + $('#filter_{$join_field_name}').val() + "' />";

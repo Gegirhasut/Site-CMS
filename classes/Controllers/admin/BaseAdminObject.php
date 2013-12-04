@@ -47,6 +47,7 @@ class BaseAdminObject extends BaseAdminSecurity
             $this->executeHooks();
         }
         //print_r($subValues);
+        //exit;
         //print_r($this->class);
         $this->parseSubValues($subValues, $id);
         $this->parseRemoveImage();
@@ -149,11 +150,15 @@ class BaseAdminObject extends BaseAdminSecurity
                 $manyClass = $this->loadClass($field['many']['source']);
 
                 $fields = "{$manyClass->table}.{$field['many']['identity']}, {$manyClass->table}.{$field['many']['show_field']}";
-                foreach ($field['many']['fields'] as $f => $v) {
-                    $fields .= ",{$manyClass->table}.$f";
+                if (isset($field['many']['fields'])) {
+                    foreach ($field['many']['fields'] as $f => $v) {
+                        $fields .= ",{$manyClass->table}.$f";
+                    }
                 }
-                foreach ($field['join']['fields'] as $f => $v) {
-                    $fields .= ",{$joinClass->table}.$f";
+                if (isset($field['join']['fields'])) {
+                    foreach ($field['join']['fields'] as $f => $v) {
+                        $fields .= ",{$joinClass->table}.$f";
+                    }
                 }
 
                 $select = $this->_adminModel

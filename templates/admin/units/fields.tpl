@@ -8,13 +8,16 @@
         return true;
     }
 
-    function getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField)
+    function getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, title)
     {
         var content = '<div id="image_div_' + currentIndex + '" class="images_div">';
         content += '<a href="/' + bigPath + '" title="Большая картинка" class="thickbox">';
         content += '<img src="/' + smallPath + '" alt="Увеличить картинку">';
         content += '</a><a href="javascript:;" title="Удалить" onclick="remove_image(' + currentIndex + ')">X</a>';
         content += "<input type='hidden' name='images_" + imgField + "_" + currentIndex + "' value='" + fileName + "' />";
+        if (title !== false) {
+            content += "Title: <input type='text' name='imagestitle_" + imgField + "_" + currentIndex + "' value='" + title + "' />";
+        }
         content += '</div>';
 
         return content;
@@ -33,7 +36,11 @@
                             <td valign="top">{$field.title}</td>
                         {/if}
                         <td>
-                            {if $field.type eq 'manyToMany'}
+                            {if $field.type eq 'geo'}
+                                {if $field.geo_type eq 'google'}
+                                    {include file="admin/units/field_geo_google.tpl"}
+                                {/if}
+                            {elseif $field.type eq 'manyToMany'}
                                 {include file="admin/units/field_many_to_many.tpl"}
                             {elseif $field.type eq "list"}
                                 <textarea cols="60" rows="40" name="{$name}" id="{$name}"></textarea>

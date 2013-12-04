@@ -15,7 +15,7 @@
     var content = '';
     {if $object[$name]|@count neq 0}
         {foreach from=$object[$name] item=image name=foo}
-            content = getContentForUploadedImage ({$smarty.foreach.foo.index+1}, '{$images.small_path}/{$image.path}', '{$images.upload}/{$image.path}', '{$image.path}', '{$images.field}');
+            content = getContentForUploadedImage ({$smarty.foreach.foo.index+1}, '{$images.small_path}/{$image.path}', '{$images.upload}/{$image.path}', '{$image.path}', '{$images.field}', {if isset($image.title)}'{$image.title}'{else}false{/if});
             {if $smarty.foreach.foo.index+1 eq 1}
                 $('#images_{$images.field}').html(content);
             {else}

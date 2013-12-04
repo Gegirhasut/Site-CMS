@@ -56,6 +56,7 @@ class BaseAdminObject extends BaseAdminSecurity
         
         $this->clear_all_cache();
         $this->assign('post', 1);
+        $this->class = $this->loadClass(Router::getUrlPart(3), true);
     }
 
     protected function insertManyToMany($id) {
@@ -94,19 +95,46 @@ class BaseAdminObject extends BaseAdminSecurity
         if (!empty($subValues)) {
             foreach ($subValues as $subValue) {
                 $values = $this->class->fields[$subValue]['subvalue'];
+                $subvalue_title = $this->class->fields[$subValue]['subvalue_title'];
+
                 $subClass = $this->loadClass($this->class->fields[$subValue]['source']);
                 $this->_adminModel
                     ->delete($subClass->table)
                     ->where($this->class->identity . " = $id")
                     ->execute();
 
-                $subClass->fields[$this->class->fields[$subValue]['join_field']]['value'] = $id;
+                foreach ($subClass->fields as $key => &$field) {
+                    if ($key == $this->class->fields[$subValue]['join_field']) {
+                        $field['value'] = $id;
+                    } elseif ($field['type'] == 'copy') {
+                        $field['value'] = $_POST[$key];
+                    }
+                }
 
-                foreach ($values as $path) {
+                foreach ($values as $key => $path) {
                     $subClass->fields['path']['value'] = $path;
+                    if (isset($subClass->fields['title'])) {
+                        $subClass->fields['title']['value'] = $subvalue_title[$key];
+                    }
                     $this->_adminModel->insert($subClass);
                 }
             }
+        }
+    }
+
+    protected function assignGeoFields(&$object) {
+        $geoFieldName = null;
+
+        foreach ($this->class->fields as $key => $field) {
+            if ($field['type'] == 'geo') {
+                $geoFieldName = $key;
+            }
+        }
+
+        if (!is_null($geoFieldName)) {
+            $geoField = $this->class->fields[$geoFieldName];
+            $this->class->fields[$geoFieldName]['fields']['latitude']['value'] = $object[0][$geoField['fields']['latitude']['name']];
+            $this->class->fields[$geoFieldName]['fields']['longitude']['value'] = $object[0][$geoField['fields']['longitude']['name']];
         }
     }
 
@@ -135,7 +163,9 @@ class BaseAdminObject extends BaseAdminSecurity
                         ->where("{$field['identity']} = {$object[0][$key]}")
                         ->fetchAll();
 
-                    $field['values'] = $select[0][$field['show_field']];
+                    if (!empty($select[0])) {
+                        $field['values'] = $select[0][$field['show_field']];
+                    }
                 }
             }
         }
@@ -205,9 +235,10 @@ class BaseAdminObject extends BaseAdminSecurity
               ->fetchAll();
         }
 
+        //print_r($object);exit;
+
+        $this->assignGeoFields($object);
 		$this->assignSelectFields($object);
-        //print_r($this->class->fields);
-        //exit;
         $this->assignManyToManyFields($object);
 
         //print_r($object[0]);echo "<br>";
@@ -225,6 +256,10 @@ class BaseAdminObject extends BaseAdminSecurity
         $this->assign('fields', $this->class->fields);
         $this->assign('object', empty($object) ? null : $object[0]);
         $this->assign('identity', $this->class->identity);
+
+        if(isset($_SESSION['last_upload'])) {
+            $this->assign('last_upload', $_SESSION['last_upload']);
+        }
 		
 		$this->caching = false;
 		

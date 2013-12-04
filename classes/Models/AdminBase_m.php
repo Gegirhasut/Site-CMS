@@ -55,6 +55,12 @@ class AdminBase_m extends BaseModel
         return $this;
     }
 
+    public function groupBy($by) {
+        $this->query .= " GROUP BY $by";
+
+        return $this;
+    }
+
     public function orderByNoDirection($field) {
         $this->query .= " ORDER BY $field";
 
@@ -185,8 +191,8 @@ class AdminBase_m extends BaseModel
     	  } else {
     	    $object->fields[$updateField]['value'] = str_replace("--", "-", $this->translitIt($link));
     	  }
-    	  
-    	  if (isset($object['fields'][$updateField]['value'])) {
+
+    	  if (isset($object->fields[$updateField]['value'])) {
 	    	  $query = "update {$object->table} set $updateField = '{$object->fields[$updateField]['value']}' where {$object->identity} = $id";
 	    	  $this->executeQuery($query);
     	  }

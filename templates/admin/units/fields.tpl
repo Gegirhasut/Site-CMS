@@ -8,13 +8,16 @@
         return true;
     }
 
-    function getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField)
+    function getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, title)
     {
         var content = '<div id="image_div_' + currentIndex + '" class="images_div">';
         content += '<a href="/' + bigPath + '" title="Большая картинка" class="thickbox">';
         content += '<img src="/' + smallPath + '" alt="Увеличить картинку">';
         content += '</a><a href="javascript:;" title="Удалить" onclick="remove_image(' + currentIndex + ')">X</a>';
         content += "<input type='hidden' name='images_" + imgField + "_" + currentIndex + "' value='" + fileName + "' />";
+        if (title !== false) {
+            content += "Title: <input type='text' name='imagestitle_" + imgField + "_" + currentIndex + "' value='" + title + "' />";
+        }
         content += '</div>';
 
         return content;
@@ -28,7 +31,7 @@
         {foreach from=$fields item=field key=name}
             {if $name neq $identity}
                 <tr>
-                    {if $field.type neq 'link' && $field.type neq 'preview'}
+                    {if ($field.type neq 'link' && $field.type neq 'preview') || ($field.type eq 'link' && $object neq null)}
                         {if $fields.geo.latitude neq $name && $fields.geo.longitude neq $name}
                             <td valign="top">{$field.title}</td>
                         {/if}

@@ -219,6 +219,7 @@ class BaseController extends MLM_Smarty
             } elseif ($post_parameter['type'] == 'images') {
                 $post_parameter['value'] = $postHelper->GetFromPost($key);
                 $images = $postHelper->GetFromPostByMask('images_' . $key . '_');
+                $titles = $postHelper->GetFromPostByMask('imagestitle_' . $key . '_');
                 $post_parameter['subvalue'] = array();
                 $subValues[] = $key;
 
@@ -229,6 +230,9 @@ class BaseController extends MLM_Smarty
                         if (is_null($firstImage)) {
                             $firstImage = $image;
                         }
+                    }
+                    foreach ($titles as $title) {
+                        $post_parameter['subvalue_title'][] = $title;
                     }
                     if(isset($post_parameter['preview'])) {
                         $fields[$post_parameter['preview']]['value'] = $firstImage;
@@ -254,8 +258,6 @@ class BaseController extends MLM_Smarty
 			    }
 		    }
 		}
-
-        print_r($fields);
 
         return $subValues;
 	}

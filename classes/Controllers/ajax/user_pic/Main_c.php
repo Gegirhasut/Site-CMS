@@ -41,7 +41,9 @@ class Main_c extends BaseController
 		  unlink($path);
 		}
 		
-		require_once('helpers/json.php');
+		if (isset($_SESSION['last_upload'])) {
+            unset($_SESSION['last_upload']);
+        }
 		echo $new_path;
 		exit();
 	}

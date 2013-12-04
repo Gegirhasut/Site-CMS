@@ -144,6 +144,10 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 				function goNext(){
 					jQuery("#TB_window").remove();
 					jQuery("body").append("<div id='TB_window'></div>");
+                    if (TB_NextURL == '' && TB_NextCaption == '') {
+                        tb_remove();
+                        return false;
+                    }
 					tb_show(TB_NextCaption, TB_NextURL, imageGroup);				
 					return false;	
 				}

@@ -83,6 +83,7 @@
         </table>
     </div>
 </div>
+<br>
 <script>
     tb_init('a[rel=car_' + {$car.car_id} + '],a#prev_' + {$car.car_id});//apply thickbox
 </script>

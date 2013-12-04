@@ -60,7 +60,9 @@ class Main_c extends BaseController
 		}		
 		
 		require_once('helpers/json.php');
-		echo arrayToJson($result);
+        $json_array = arrayToJson($result);
+        $_SESSION['last_upload'] = $json_array;
+		echo $json_array;
 		exit();
 	}
 	

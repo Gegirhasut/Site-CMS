@@ -39,7 +39,7 @@ function replaceImageContent(smallPath, bigPath, fileName) {
     $('#' + imgField).val(imagesCount);
 
     currentIndex++;
-    var content = getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, '');
+    var content = getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, '', '');
 
     if (imagesCount == 1) {
         $('#images_' + imgField).html(content);

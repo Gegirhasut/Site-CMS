@@ -172,8 +172,24 @@ class BaseController extends MLM_Smarty
 	public function ParsePost(&$fields) {
         $subValues = array();
 		$postHelper = $this->_loadPostHelper();
-		
-		foreach ($fields as $key => &$post_parameter) {
+
+        $geoFieldKey = null;
+        foreach ($fields as $key => $post_parameter) {
+            if ($post_parameter['type'] == 'geo') {
+                // just skip the geo type
+                $geoFieldKey = $key;
+            }
+        }
+        if (!is_null($geoFieldKey)) {
+            $geoField = $fields[$geoFieldKey];
+            $latName = $geoField['fields']['latitude']['name'];
+            $longName = $geoField['fields']['longitude']['name'];
+            $fields[$latName] = array ('type' => 'text');
+            $fields[$longName] = array ('type' => 'text');
+            unset($fields[$geoFieldKey]);
+        }
+
+        foreach ($fields as $key => &$post_parameter) {
             if ($post_parameter['type'] == 'preview') {
                 // photo preview sets in next sections for manyToMany image parser
             }
@@ -203,6 +219,8 @@ class BaseController extends MLM_Smarty
             } elseif ($post_parameter['type'] == 'images') {
                 $post_parameter['value'] = $postHelper->GetFromPost($key);
                 $images = $postHelper->GetFromPostByMask('images_' . $key . '_');
+                $titles = $postHelper->GetFromPostByMask('imagestitle_' . $key . '_');
+                $descrs = $postHelper->GetFromPostByMask('imagesdescr_' . $key . '_');
                 $post_parameter['subvalue'] = array();
                 $subValues[] = $key;
 
@@ -213,6 +231,12 @@ class BaseController extends MLM_Smarty
                         if (is_null($firstImage)) {
                             $firstImage = $image;
                         }
+                    }
+                    foreach ($titles as $title) {
+                        $post_parameter['subvalue_title'][] = $title;
+                    }
+                    foreach ($descrs as $descr) {
+                        $post_parameter['subvalue_descr'][] = $descr;
                     }
                     if(isset($post_parameter['preview'])) {
                         $fields[$post_parameter['preview']]['value'] = $firstImage;

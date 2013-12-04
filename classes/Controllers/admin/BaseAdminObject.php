@@ -49,8 +49,10 @@ class BaseAdminObject extends BaseAdminSecurity
         //print_r($subValues);
         //exit;
         //print_r($this->class);
-        $this->parseSubValues($subValues, $id);
-        $this->parseRemoveImage();
+        if (isset($id)) {
+            $this->parseSubValues($subValues, $id);
+            $this->parseRemoveImage();
+        }
         
         $this->caching = true;
         
@@ -95,7 +97,12 @@ class BaseAdminObject extends BaseAdminSecurity
         if (!empty($subValues)) {
             foreach ($subValues as $subValue) {
                 $values = $this->class->fields[$subValue]['subvalue'];
-                $subvalue_title = $this->class->fields[$subValue]['subvalue_title'];
+                if (isset($this->class->fields[$subValue]['subvalue_title'])) {
+                    $subvalue_title = $this->class->fields[$subValue]['subvalue_title'];
+                }
+                if (isset($this->class->fields[$subValue]['subvalue_descr'])) {
+                    $subvalue_descr = $this->class->fields[$subValue]['subvalue_descr'];
+                }
 
                 $subClass = $this->loadClass($this->class->fields[$subValue]['source']);
                 $this->_adminModel
@@ -116,6 +123,10 @@ class BaseAdminObject extends BaseAdminSecurity
                     if (isset($subClass->fields['title'])) {
                         $subClass->fields['title']['value'] = $subvalue_title[$key];
                     }
+                    if (isset($subClass->fields['descr'])) {
+                        $subClass->fields['descr']['value'] = str_replace("\r\n", "<br/>", $subvalue_descr[$key]);
+                    }
+
                     $this->_adminModel->insert($subClass);
                 }
             }
@@ -213,6 +224,12 @@ class BaseAdminObject extends BaseAdminSecurity
             //->where($this->class->identity . " = {$object[0][$this->class->identity]['value']}")
             ->where($this->class->identity . " = {$object[0][$this->class->identity]}")
             ->fetchAll();
+
+        foreach ($subValues as &$value) {
+            if (isset($value['descr'])) {
+                $value['descr'] = str_replace("<br/>", "\r\n", $value['descr']);
+            }
+        }
 
         $object[0][$this->class->images['field']] = $subValues;
     }

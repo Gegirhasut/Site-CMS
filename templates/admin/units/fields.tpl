@@ -8,17 +8,24 @@
         return true;
     }
 
-    function getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, title)
+    function getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, title, descr)
     {
         var content = '<div id="image_div_' + currentIndex + '" class="images_div">';
-        content += '<a href="/' + bigPath + '" title="Большая картинка" class="thickbox">';
+        content += '<table><tr><td><a href="/' + bigPath + '" title="Большая картинка" class="thickbox">';
         content += '<img src="/' + smallPath + '" alt="Увеличить картинку">';
         content += '</a><a href="javascript:;" title="Удалить" onclick="remove_image(' + currentIndex + ')">X</a>';
-        content += "<input type='hidden' name='images_" + imgField + "_" + currentIndex + "' value='" + fileName + "' />";
+        content += "<input type='hidden' name='images_" + imgField + "_" + currentIndex + "' value='" + fileName + "' /></td>";
         if (title !== false) {
-            content += "Title: <input type='text' name='imagestitle_" + imgField + "_" + currentIndex + "' value='" + title + "' />";
+            content += "<td>Title: <input type='text' name='imagestitle_" + imgField + "_" + currentIndex + "' value='" + title + "' />";
         }
-        content += '</div>';
+        if (descr !== false) {
+            var descr_text = $('#descr_image_' + descr).html();
+            content += "<br>Description:<br><textarea rows='6' name='imagesdescr_" + imgField + "_" + currentIndex + "'>" + descr_text + "</textarea>";
+        }
+        if (title !== false) {
+            content += "</td>";
+        }
+        content += '</tr></table></div>';
 
         return content;
     }

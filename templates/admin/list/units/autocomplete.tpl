@@ -10,7 +10,7 @@
         if (search != '') {ldelim}
             $.ajax({ldelim}
                 dataType: "json",
-                url: '/admin/api/{$field.source}/' + search,
+                url: '/admin/api/{$field.source}/?{$field.show_field}=' + search,
                 success: parseJson{$f_name}
             {rdelim});
         {rdelim} else {ldelim}

@@ -1,8 +1,11 @@
 {foreach from=$objects item=product key=p_name}
-    <tr>
+    <tr {if isset($sort)}style="cursor:move;" title="Перетащить на другое место"{/if} class="drag">
         {foreach from=$fields item=field key=f_name}
+            {if $f_name eq $identity}
+                <input type="hidden" class="hidden_identity" value="{$product[$f_name]}"/>
+            {/if}
             {if !isset($field.nolist)}
-                <td align="middle">
+                <td align="middle" {if $field.type eq 'sort'}class="sort_field"{/if}>
                     {if $field.type eq 'link'}
                         <a href="javascript:open_window('/admin/add-update/{$class}/{$product[$fields.identity]}',1000,800);">{$product[$f_name]}</a>
                     {elseif $field.type eq 'checkbox'}

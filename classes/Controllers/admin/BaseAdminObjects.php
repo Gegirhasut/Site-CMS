@@ -16,49 +16,6 @@ class BaseAdminObjects extends BaseAdminSecurity
         parent::__construct();
         $this->class = $this->loadClass(Router::getUrlPart(3), true);
     }
-    
-/*    function sort($objects, $adminModel) {
-        $postHelper = $this->_loadPostHelper();
-        $operation = $postHelper->GetFromGet('operation');
-        if ($operation == null) {
-          return false;
-        }
-        
-        $idValue = $postHelper->GetFromGet('id');
-        $idName = $this->_object['identity'];
-        
-        foreach ($objects as $index => $object) {
-          if ($object[$idName] == $idValue) {
-            break;
-          }
-        }
-        
-        if ($operation == 'up' && $index > 0) {
-          $object = $objects[$index];
-          $objects[$index] = $objects[$index - 1];
-          $objects[$index - 1] = $object;
-          $this->saveSort($objects, $adminModel);
-          return true;
-        }
-        
-        if ($operation == 'down' && $index < count($objects)) {
-          $object = $objects[$index];
-          $objects[$index] = $objects[$index + 1];
-          $objects[$index + 1] = $object;
-          $this->saveSort($objects, $adminModel);
-          return true;
-        }
-        
-        return false;
-    }
-    
-    function saveSort($objects, $adminModel) {
-        foreach ($objects as $index => &$object) {
-          $sort = $index + 1;
-          $sql = "update {$this->_tableName} set {$this->_object['sort']} = {$sort} where {$this->_object['identity']} = {$object[$this->_object['identity']]}";
-          $adminModel->executeQuery($sql);
-        }
-    }*/
 
     function post () {
         $this->parsePostOnFilters();
@@ -102,6 +59,20 @@ class BaseAdminObjects extends BaseAdminSecurity
           }
       }
 
+      if (isset($this->class->group) && isset($_POST[$this->class->group])) {
+          $page = 1;
+          $offset = 99999;
+      } else if (isset($this->class->sort)) {
+          $page = 1;
+          $offset = 99999;
+      }
+
+      if (isset($this->class->sort)) {
+          if ((isset($this->class->group) && !empty($_POST[$this->class->group])) || !isset($this->class->group)) {
+            $this->_adminModel->orderBy($this->class->sort);
+          }
+      }
+
       $objects = $this->_adminModel
           ->limit(($page - 1) * $offset, $offset)
           ->fetchAll();
@@ -111,7 +82,16 @@ class BaseAdminObjects extends BaseAdminSecurity
       $this->findSelectFields($this->class->fields, $objects);
 
       $this->assign('number_operators', $number_operators);
+      //print_r($this->class->fields);
       $this->assign('fields', $this->class->fields);
+      if (isset($this->class->sort)) {
+          if (!isset($this->class->group) || (isset($this->class->group) && !empty($_POST[$this->class->group]))) {
+            $this->assign('sort', $this->class->sort);
+          }
+          if (isset($this->class->group)) {
+              $this->assign('group', $this->class->group);
+          }
+      }
       $this->assign('identity', $this->class->identity);
       $this->assign('objects', empty($objects) ? null : $objects);
     }

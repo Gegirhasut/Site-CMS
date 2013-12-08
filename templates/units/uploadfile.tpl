@@ -13,6 +13,9 @@ var imgField = '{$images.field}';
 var imgFieldName = '{$images.field}';
 var imgSmallPath = '{$images.small_path}';
 var imgUpload = '{$images.upload}';
+var photoTitle = {if isset($photoTitle)}''{else}false{/if};
+var photoDescr = {if isset($photoDescr)}''{else}false{/if};
+var sortField = {if isset($sortField)}'{$sortField}'{else}false{/if};
 
 {literal}
 var jcrop_api;
@@ -39,7 +42,7 @@ function replaceImageContent(smallPath, bigPath, fileName) {
     $('#' + imgField).val(imagesCount);
 
     currentIndex++;
-    var content = getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, '', '');
+    var content = getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, photoTitle, photoDescr, sortField);
 
     if (imagesCount == 1) {
         $('#images_' + imgField).html(content);

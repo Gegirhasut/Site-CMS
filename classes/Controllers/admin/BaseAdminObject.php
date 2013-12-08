@@ -95,6 +95,7 @@ class BaseAdminObject extends BaseAdminSecurity
 
     protected function parseSubValues($subValues, $id) {
         if (!empty($subValues)) {
+
             foreach ($subValues as $subValue) {
                 $values = $this->class->fields[$subValue]['subvalue'];
                 if (isset($this->class->fields[$subValue]['subvalue_title'])) {
@@ -102,6 +103,9 @@ class BaseAdminObject extends BaseAdminSecurity
                 }
                 if (isset($this->class->fields[$subValue]['subvalue_descr'])) {
                     $subvalue_descr = $this->class->fields[$subValue]['subvalue_descr'];
+                }
+                if (isset($this->class->fields[$subValue]['subvalue_sort'])) {
+                    $subvalue_sort = $this->class->fields[$subValue]['subvalue_sort'];
                 }
 
                 $subClass = $this->loadClass($this->class->fields[$subValue]['source']);
@@ -122,6 +126,9 @@ class BaseAdminObject extends BaseAdminSecurity
                     $subClass->fields['path']['value'] = $path;
                     if (isset($subClass->fields['title'])) {
                         $subClass->fields['title']['value'] = $subvalue_title[$key];
+                    }
+                    if (isset($subClass->fields['sort'])) {
+                        $subClass->fields['sort']['value'] = $subvalue_sort[$key];
                     }
                     if (isset($subClass->fields['descr'])) {
                         $subClass->fields['descr']['value'] = str_replace("\r\n", "<br/>", $subvalue_descr[$key]);
@@ -221,9 +228,13 @@ class BaseAdminObject extends BaseAdminSecurity
 
         $subValues = $this->_adminModel
             ->select($subClass->table)
-            //->where($this->class->identity . " = {$object[0][$this->class->identity]['value']}")
-            ->where($this->class->identity . " = {$object[0][$this->class->identity]}")
-            ->fetchAll();
+            ->where($this->class->identity . " = {$object[0][$this->class->identity]}");
+
+        if (isset($this->class->images['sort'])) {
+            $subValues = $subValues->orderBy($this->class->images['sort']);
+        }
+
+        $subValues = $subValues->fetchAll();
 
         foreach ($subValues as &$value) {
             if (isset($value['descr'])) {
@@ -267,6 +278,15 @@ class BaseAdminObject extends BaseAdminSecurity
         if (isset($this->class->images)) {
             $this->assignImageFields($object);
             $this->assign('images', $this->class->images);
+            if (isset($this->class->fields[$this->class->images['field']]['descr'])) {
+                $this->assign('photoDescr', 1);
+            }
+            if (isset($this->class->fields[$this->class->images['field']]['title'])) {
+                $this->assign('photoTitle', 1);
+            }
+            if (isset($this->class->images['sort'])) {
+                $this->assign('sortField', $this->class->images['sort']);
+            }
         }
         //print_r($this->class->fields);echo "<br>";
         //print_r($this->class->fields['kpp']);

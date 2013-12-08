@@ -8,7 +8,7 @@
         return true;
     }
 
-    function getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, title, descr)
+    function getContentForUploadedImage (currentIndex, smallPath, bigPath, fileName, imgField, title, descr, sort)
     {
         var content = '<div id="image_div_' + currentIndex + '" class="images_div">';
         content += '<table><tr><td><a href="/' + bigPath + '" title="Большая картинка" class="thickbox">';
@@ -21,6 +21,9 @@
         if (descr !== false) {
             var descr_text = $('#descr_image_' + descr).html();
             content += "<br>Description:<br><textarea rows='6' name='imagesdescr_" + imgField + "_" + currentIndex + "'>" + descr_text + "</textarea>";
+        }
+        if (sort !== false) {
+            content += "<input class='img_sort' type='hidden' name='imagessort_" + imgField + "_" + currentIndex + "' value='" + currentIndex + "' />";
         }
         if (title !== false) {
             content += "</td>";

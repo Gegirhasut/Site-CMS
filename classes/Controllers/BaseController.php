@@ -196,23 +196,31 @@ class BaseController extends MLM_Smarty
             elseif ($post_parameter['type'] == 'manyToMany') {
                 $sostav = $postHelper->GetFromPostByMask('many_sostav_' . $post_parameter['many']['identity'] . '_' . $key . "_");
                 $join_fields = array();
-                foreach ($post_parameter['join']['fields'] as $field => $desc) {
-                    $join_fields[$field] = $postHelper->GetFromPostByMask('many_join_' . $field . "_");
+                if (isset($post_parameter['join']['fields'])) {
+                    foreach ($post_parameter['join']['fields'] as $field => $desc) {
+                        $join_fields[$field] = $postHelper->GetFromPostByMask('many_join_' . $field . "_");
+                    }
                 }
                 $many_fields = array();
-                foreach ($post_parameter['many']['fields'] as $field => $desc) {
-                    $many_fields[$field] = $postHelper->GetFromPostByMask('many_field_' . $field . "_");
+                if (isset($post_parameter['many']['fields'])) {
+                    foreach ($post_parameter['many']['fields'] as $field => $desc) {
+                        $many_fields[$field] = $postHelper->GetFromPostByMask('many_field_' . $field . "_");
+                    }
                 }
                 $value = array ();
                 foreach ($sostav as $k => $many) {
                     $value[] = array ($post_parameter['many']['identity'] => $many);
                     $keyIndex = str_replace('many_sostav_' . $post_parameter['many']['identity'] . '_' . $key . '_', '', $k);
-                    foreach ($post_parameter['join']['fields'] as $field => $desc) {
-                        $value[count($value) - 1][$field] = $join_fields[$field]['many_join_' . $field . "_" . $keyIndex];
+                    if (isset($post_parameter['join']['fields'])) {
+                        foreach ($post_parameter['join']['fields'] as $field => $desc) {
+                            $value[count($value) - 1][$field] = $join_fields[$field]['many_join_' . $field . "_" . $keyIndex];
+                        }
                     }
 
-                    foreach ($post_parameter['many']['fields'] as $field => $desc) {
-                        $value[count($value) - 1][$field] = $many_fields[$field]['many_field_' . $field . "_" . $keyIndex];
+                    if (isset($post_parameter['many']['fields'])) {
+                        foreach ($post_parameter['many']['fields'] as $field => $desc) {
+                            $value[count($value) - 1][$field] = $many_fields[$field]['many_field_' . $field . "_" . $keyIndex];
+                        }
                     }
                 }
                 $post_parameter['values'] = $value;
@@ -221,6 +229,8 @@ class BaseController extends MLM_Smarty
                 $images = $postHelper->GetFromPostByMask('images_' . $key . '_');
                 $titles = $postHelper->GetFromPostByMask('imagestitle_' . $key . '_');
                 $descrs = $postHelper->GetFromPostByMask('imagesdescr_' . $key . '_');
+                $sorts = $postHelper->GetFromPostByMask('imagessort_' . $key . '_');
+
                 $post_parameter['subvalue'] = array();
                 $subValues[] = $key;
 
@@ -237,6 +247,9 @@ class BaseController extends MLM_Smarty
                     }
                     foreach ($descrs as $descr) {
                         $post_parameter['subvalue_descr'][] = $descr;
+                    }
+                    foreach ($sorts as $sort) {
+                        $post_parameter['subvalue_sort'][] = $sort;
                     }
                     if(isset($post_parameter['preview'])) {
                         $fields[$post_parameter['preview']]['value'] = $firstImage;

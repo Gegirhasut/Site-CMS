@@ -19,12 +19,29 @@
     var content = '';
     {if $object[$name]|@count neq 0}
         {foreach from=$object[$name] item=image name=foo}
-            content = getContentForUploadedImage ({$smarty.foreach.foo.index+1}, '{$images.small_path}/{$image.path}', '{$images.upload}/{$image.path}', '{$image.path}', '{$images.field}', {if isset($image.title)}'{$image.title}'{else}false{/if}, {if isset($image.descr)}{$smarty.foreach.foo.index+1}{else}false{/if});
+            content = getContentForUploadedImage ({$smarty.foreach.foo.index+1}, '{$images.small_path}/{$image.path}', '{$images.upload}/{$image.path}', '{$image.path}', '{$images.field}', {if isset($image.title)}'{$image.title}'{else}false{/if}, {if isset($image.descr)}{$smarty.foreach.foo.index+1}{else}false{/if}, {if isset($image.sort)}{$image.sort}{else}false{/if});
             {if $smarty.foreach.foo.index+1 eq 1}
                 $('#images_{$images.field}').html(content);
             {else}
                 $('#images_{$images.field}').append(content);
             {/if}
         {/foreach}
+    {/if}
+
+    {if isset($sortField)}
+        var sortFieldName = '{$name}';
+        {literal}
+        $( "#images_" + sortFieldName).sortable({
+            helper: "clone",
+            cursor: "move",
+            items: ".images_div",
+            update: function(event, ui) {
+                var fields = $('.images_div .img_sort');
+                for (var i = 0; i < fields.length; i++) {
+                    $(fields[i]).val(i+1);
+                }
+            }
+        });
+        {/literal}
     {/if}
 </script>

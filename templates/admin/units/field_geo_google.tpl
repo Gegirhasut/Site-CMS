@@ -39,8 +39,8 @@
     }
 
     function addMarker(position) {
-        $('#latitude').val(position.ob);
-        $('#longitude').val(position.pb);
+        $('#latitude').val(position.lat());
+        $('#longitude').val(position.lng());
 
         map.setCenter(position);
         if (marker != null) {
@@ -60,8 +60,8 @@
     }
 
     function markerDragEnd(position) {
-        $('#latitude').val(position.ob);
-        $('#longitude').val(position.pb);
+        $('#latitude').val(position.lat());
+        $('#longitude').val(position.lng());
     }
 
     function initialize() {

@@ -288,6 +288,7 @@ class BaseAdminObject extends BaseAdminSecurity
                 $this->assign('sortField', $this->class->images['sort']);
             }
         }
+        
         //print_r($this->class->fields);echo "<br>";
         //print_r($this->class->fields['kpp']);
         $this->assign('fields', $this->class->fields);

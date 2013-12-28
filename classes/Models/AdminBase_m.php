@@ -201,13 +201,16 @@ class AdminBase_m extends BaseModel
         return $id;
     }
 
-    protected function _getInsertSqls($fields, &$fieldsValue, &$values) {
-        $updateFields = array();
+	protected function _getInsertSqls($fields, &$fieldsValue, &$values) {
+	    $updateFields = array();
 
         $fieldsValue = "";
         $values = "";
 
         foreach ($fields as $name => $field) {
+            if (isset($field['nofield'])) {
+                continue;
+            }
             if (isset($field['value'])) {
                 $fieldsValue .= $name . ",";
                 if ($field['value'] == "NULL") {
@@ -236,6 +239,9 @@ class AdminBase_m extends BaseModel
         $identity = "where ";
 
         foreach ($object->fields as $name => $field) {
+            if (isset($field['nofield'])) {
+                continue;
+            }
             if (isset($field['value'])) {
                 if ($name != $object->identity) {
                     $sets .= $this->setField($field['value'], $name) . ",";

@@ -82,7 +82,11 @@ class BaseAdminObjects extends BaseAdminSecurity
       $this->findSelectFields($this->class->fields, $objects);
 
       $this->assign('number_operators', $number_operators);
-      //print_r($this->class->fields);
+
+      if (isset($this->class->images)) {
+        $this->assign('images', $this->class->images);
+      }
+
       $this->assign('fields', $this->class->fields);
       if (isset($this->class->sort)) {
           if (!isset($this->class->group) || (isset($this->class->group) && !empty($_POST[$this->class->group]))) {
@@ -184,14 +188,6 @@ class BaseAdminObjects extends BaseAdminSecurity
 		
 		$this->assignObjects();
 
-		/*if ($this->sort($object, $adminModel)) {
-		  $object = $this->loadObjects($adminModel);
-		  header("Location: {$_SERVER['REDIRECT_URL']}");
-		  exit();
-		}*/
-
-
-		
 		$this->caching = false;
 		
 		parent::display($uniquePageValue);

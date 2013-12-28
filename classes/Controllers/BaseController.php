@@ -108,8 +108,8 @@ class BaseController extends MLM_Smarty
 	  }
 	}
 	
-	public function CheckObject(&$object, $tableName = null) {
-	  foreach ($object['fields'] as $key => &$post_parameter) {
+	public function CheckObject(&$object) {
+	  foreach ($object->fields as $key => &$post_parameter) {
 	    if (isset($post_parameter['check'])) {
 	      $checks = explode(',', $post_parameter['check']);
 	       
@@ -117,23 +117,23 @@ class BaseController extends MLM_Smarty
 	    				switch ($check) {
 	    				  case 'password' :
 	    				    if (empty($post_parameter['value']) || $post_parameter['value'] == 'NULL') {
-	    				      $object['check_error'] = "Задайте пароль!";
+                              $object->check_error = "Задайте пароль!";
 	    				      $this->EmptyNulls($object);
 	    				      return false;
 	    				    }
 	    				    break;
 	    				  case 'empty' :
 	    				    if (empty($post_parameter['value']) || $post_parameter['value'] == 'NULL') {
-	    						    $object['check_error'] = "Вы не задали поле '" . $post_parameter['title'] . "'";
+	    						    $object->check_error = "Вы не задали поле '" . $post_parameter['title'] . "'";
 	    						    $this->EmptyNulls($object);
 	    						    return false;
 	    				    }
 	    				    break;
 	    				  case 'unique':
-	    				    if ($post_parameter['value'] != 'NULL' && $tableName != null) {
-	    				      $record = $this->_adminModel->get($tableName, " $key = '{$post_parameter['value']}'");
+	    				    if ($post_parameter['value'] != 'NULL' && $object->table != null) {
+	    				      $record = $this->_adminModel->select($object->table)->where("$key = '{$post_parameter['value']}'")->fetchAll();
 	    				      if (!empty($record)) {
-	    				        $object['check_error'] = "Пользователь с {$post_parameter['title']} = {$post_parameter['value']} уже существует!";
+                                $object->check_error = "Пользователь с {$post_parameter['title']} = {$post_parameter['value']} уже существует!";
 	    				        $this->EmptyNulls($object);
 	    				        return false;
 	    				      }
@@ -141,14 +141,14 @@ class BaseController extends MLM_Smarty
 	    				    break;
 	    				  case 'email':
 	    				    if (empty($post_parameter['value']) || filter_var($post_parameter['value'], FILTER_VALIDATE_EMAIL) === false) {
-	    				      $object['check_error'] = "E-mail задан неверно!";
+                              $object->check_error = "E-mail задан неверно!";
 	    				      $this->EmptyNulls($object);
 	    				      return false;
 	    				    }
 	  						    break;
 	    				  case 'url':
 	    				    if (empty($post_parameter['value']) || filter_var($post_parameter['value'], FILTER_VALIDATE_URL) === false) {
-	    				      $object['check_error'] = "Адресная строка задана не верно!";
+                              $object->check_error = "Адресная строка задана не верно!";
 	    				      $this->EmptyNulls($object);
 	    				      return false;
 	    				    }
@@ -162,7 +162,7 @@ class BaseController extends MLM_Smarty
 	}
 	
 	public function EmptyNulls(&$object) {
-	  foreach ($object['fields'] as $key => &$post_parameter) {
+	  foreach ($object->fields as $key => &$post_parameter) {
 	    if (isset($post_parameter['value']) && $post_parameter['value'] == 'NULL') {
 	      $post_parameter['value'] = '';
 	    }

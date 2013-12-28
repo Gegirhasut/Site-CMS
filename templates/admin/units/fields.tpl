@@ -109,7 +109,7 @@
                                         value="{$field.default}"
                                     {/if}
                                     size="30"
-                                    {if $field.type eq 'checkbox' and $object[$name] eq 1}
+                                    {if $field.type eq 'checkbox' and ($object[$name] eq 1 or ($object eq null and $field.default eq 1))}
                                         checked="checked"
                                     {/if}
                                     {if isset($field.events)}

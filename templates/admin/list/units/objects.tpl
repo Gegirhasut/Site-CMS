@@ -16,10 +16,10 @@
                         {/if}
                     {elseif $field.type eq 'password'}
 
-                    {elseif $field.type eq 'img'}
+                    {elseif $field.type eq 'preview'}
                         {if $product[$f_name] neq ''}
-                            <a href="/{$fields.img.upload}/{$product[$f_name]}" title="Большая картинка" class="thickbox">
-                                <img src="/{$fields.img.small_path}/{$product[$f_name]}" alt="Увеличить картинку" height="100">
+                            <a href="/{$images.upload}/{$product[$f_name]}" title="Большая картинка" class="thickbox">
+                                <img src="/{$images.small_path}/{$product[$f_name]}" alt="Увеличить картинку" height="100">
                             </a>
                         {else}
                             не загружена

@@ -1,5 +1,5 @@
 <?php
-require_once('classes/Objects/Product.php');
+require_once('classes/Objects/Bouquet.php');
 
 class Cart {
 	protected $_field = null;
@@ -18,20 +18,18 @@ class Cart {
 	}
 	
 	function __construct($adminModel) {
-		$this->_object = new Product();
-		$this->_field = $this->_object->_object['identity'];
+		$this->_object = new Bouquet();
+		$this->_field = $this->_object->identity;
 		$this->_adminModel = $adminModel;
 	}
 	
 	function loadProduct($id) {
-	  $fields = "{$this->_object->_tableName}.r_id, {$this->_object->_tableName}.price, {$this->_object->_tableName}.opt_price";
+	  $fields = "{$this->_object->table}.b_id, {$this->_object->table}.price";
 	  
-	  $this->_loadedObject = $this->_adminModel->get(
-	    $this->_object->_tableName,
-    	       "where {$this->_field} = $id",
-    	       false,
-               $fields
-	  );
+	  $this->_loadedObject = $this->_adminModel
+          ->select($this->_object->table, $fields)
+          ->where("{$this->_field} = $id")
+          ->fetchAll();
 	}
 	
 	function getCart() {
@@ -68,22 +66,17 @@ class Cart {
 	function loadProducts() {
 	  $totalPrice = 0;
 	  $cart = $this->getCart();
-	  
+
 	  if ($cart != null) {
 	    $ids = $this->getIds($cart);
-  	    $fields = "{$this->_object->_tableName}.r_id,
-  	    {$this->_object->_tableName}.cat_id,
-        {$this->_object->_tableName}.name,
-        {$this->_object->_tableName}.code,
-  	    {$this->_object->_tableName}.price,
-  	    {$this->_object->_tableName}.opt_price";
+  	    $fields = "{$this->_object->table}.b_id,
+        {$this->_object->table}.name,
+  	    {$this->_object->table}.price";
   	   
-  	    $this->_loadedObject = $this->_adminModel->get(
-  	    $this->_object->_tableName,
-  		       "where {$this->_field} in ($ids)",
-  	           false,
-  	           $fields
-  	    );
+  	    $this->_loadedObject = $this->_adminModel
+            ->select($this->_object->table, $fields)
+            ->where("{$this->_field} in ($ids)")
+            ->fetchAll();
 	  }
 	  
 	  $idsArray = array();
@@ -95,17 +88,13 @@ class Cart {
 	  
 	  if ($this->_loadedObject != null) {
 		  foreach ($this->_loadedObject as &$object) {
-		    $id = $object[$this->_object->_object['identity']];
+		    $id = $object[$this->_object->identity];
 		    $object['count'] = $cart[$id]['c'];
 		    
 		    $idsArray[$id] = 1;
 		    
-		    if (isset($_SESSION['user']) && $_SESSION['user']['state'] == 1) {
-		    	$object['totalPrice'] = $object['count'] * $object['opt_price'];
-		    } else {
-		    	$object['totalPrice'] = $object['count'] * $object['price'];
-		    }
-		    
+	    	$object['totalPrice'] = $object['count'] * $object['price'];
+
 		    $totalPrice += $object['totalPrice'];
 		  }
 	  }
@@ -150,7 +139,7 @@ class Cart {
 		setcookie('cartsCount', '', time()-3600);
 		setcookie('price', '', time()-3600);
 		setcookie('count', '', time()-3600);
-		exit();
+		//exit();
 	}
 	
 	function addProductToCart($id, $addCount = 1)
@@ -172,12 +161,8 @@ class Cart {
 				exit;
 			}
 		    $this->loadProduct($id);
-		    if (isset($_SESSION['user']) && $_SESSION['user']['state'] == 1) {
-		    	$price = $this->_loadedObject[0]['opt_price'];
-		    } else {
-		    	$price = $this->_loadedObject[0]['price'];
-		    }
-		    
+	    	$price = $this->_loadedObject[0]['price'];
+
 		    $cart[$id] = array('p' => $price, 'c' => $addCount);
 		    
 		    $price = $price * $addCount;
@@ -209,7 +194,7 @@ class Cart {
 	  $result = array();
 	  $result['count'] = 0;
 	  $result['price'] = 0;
-	  
+
 	  if (!isset($_COOKIE['cartsCount'])) {
 	  	  $this->clean();
 	  	  return $result;
@@ -235,7 +220,9 @@ class Cart {
 	
 	function updateCart($id, $count) {
 	  $cart = $this->getCart();
-	  
+
+      $result = array();
+
 	  if (isset($cart[$id])) {
 	    $result = $this->getCartInfo($cart);
 	    
@@ -254,7 +241,7 @@ class Cart {
 	      $result['new_price'] = $cart[$id]['c'] * $cart[$id]['p'];
 	      $result['delete'] = 0;
 	    }
-	    
+
 	    $this->saveCart($cart, $result['price'], $result['count']);
 	  }
 	  

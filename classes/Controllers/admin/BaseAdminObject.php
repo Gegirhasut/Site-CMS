@@ -25,9 +25,6 @@ class BaseAdminObject extends BaseAdminSecurity
         $operation = $this->_loadPostHelper()->GetFromPost('operation');
 
         $subValues = $this->ParsePost($this->class->fields);
-        //print_r($this->class->fields);exit;
-        /*print_r($subValues);
-        exit;*/
 
         $this->_adminModel = $this->_getModelByName('AdminBase');
         
@@ -46,9 +43,7 @@ class BaseAdminObject extends BaseAdminSecurity
         if (isset($this->class->hooks)) {
             $this->executeHooks();
         }
-        //print_r($subValues);
-        //exit;
-        //print_r($this->class);
+
         if (isset($id)) {
             $this->parseSubValues($subValues, $id);
             $this->parseRemoveImage();
@@ -97,6 +92,9 @@ class BaseAdminObject extends BaseAdminSecurity
         if (!empty($subValues)) {
 
             foreach ($subValues as $subValue) {
+                if (!isset($this->class->fields[$subValue]['source'])) {
+                    continue;
+                }
                 $values = $this->class->fields[$subValue]['subvalue'];
                 if (isset($this->class->fields[$subValue]['subvalue_title'])) {
                     $subvalue_title = $this->class->fields[$subValue]['subvalue_title'];
@@ -224,21 +222,27 @@ class BaseAdminObject extends BaseAdminSecurity
         if(empty($object))
             return;
 
-        $subClass = $this->loadClass($this->class->fields[$this->class->images['field']]['source']);
+        if (!isset($this->class->fields[$this->class->images['field']]['source'])) {
+            $preview_field = $this->class->fields[$this->class->images['field']]['preview'];
+            $preview = $object[0][$preview_field];
+            $subValues[] = array('path' => $preview);
+        } else {
+            $subClass = $this->loadClass($this->class->fields[$this->class->images['field']]['source']);
 
-        $subValues = $this->_adminModel
-            ->select($subClass->table)
-            ->where($this->class->identity . " = {$object[0][$this->class->identity]}");
+            $subValues = $this->_adminModel
+                ->select($subClass->table)
+                ->where($this->class->identity . " = {$object[0][$this->class->identity]}");
 
-        if (isset($this->class->images['sort'])) {
-            $subValues = $subValues->orderBy($this->class->images['sort']);
-        }
+            if (isset($this->class->images['sort'])) {
+                $subValues = $subValues->orderBy($this->class->images['sort']);
+            }
 
-        $subValues = $subValues->fetchAll();
+            $subValues = $subValues->fetchAll();
 
-        foreach ($subValues as &$value) {
-            if (isset($value['descr'])) {
-                $value['descr'] = str_replace("<br/>", "\r\n", $value['descr']);
+            foreach ($subValues as &$value) {
+                if (isset($value['descr'])) {
+                    $value['descr'] = str_replace("<br/>", "\r\n", $value['descr']);
+                }
             }
         }
 
@@ -249,7 +253,6 @@ class BaseAdminObject extends BaseAdminSecurity
 	{
         $this->_adminModel = $this->_getModelByName('AdminBase');
 		
-		$filter = "";
 		$id = Router::getUrlPart(4);
         $object = null;
 
@@ -263,18 +266,10 @@ class BaseAdminObject extends BaseAdminSecurity
               ->fetchAll();
         }
 
-        //print_r($object);exit;
-
         $this->assignGeoFields($object);
 		$this->assignSelectFields($object);
         $this->assignManyToManyFields($object);
 
-        //print_r($object[0]);echo "<br>";
-
-        /*$select = Router::getParams('select');
-        if ($select != null) {
-            $this->assign('select', $select);
-        }*/
         if (isset($this->class->images)) {
             $this->assignImageFields($object);
             $this->assign('images', $this->class->images);
@@ -288,9 +283,7 @@ class BaseAdminObject extends BaseAdminSecurity
                 $this->assign('sortField', $this->class->images['sort']);
             }
         }
-        
-        //print_r($this->class->fields);echo "<br>";
-        //print_r($this->class->fields['kpp']);
+
         $this->assign('fields', $this->class->fields);
         $this->assign('object', empty($object) ? null : $object[0]);
         $this->assign('identity', $this->class->identity);

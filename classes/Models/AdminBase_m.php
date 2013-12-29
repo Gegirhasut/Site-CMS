@@ -149,6 +149,7 @@ class AdminBase_m extends BaseModel
         }
 
         $rows = parent::fetchAll($this->query, $identity);
+        $this->union = '';
         return $rows;
     }
 

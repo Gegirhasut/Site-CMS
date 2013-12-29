@@ -27,7 +27,7 @@
         {foreach from=$field.join.fields item=join_field key=join_field_name}
         html += $('#filter_{$join_field_name}').val() + " {$join_field.title_add}";
         html += "<input type='hidden' name='many_join_{$join_field_name}_" + count{$name} + "' value='" + $('#filter_{$join_field_name}').val() + "' />";
-        $('#filter_{$join_field_name}').val('');
+        $('#filter_{$join_field_name}').val('1');
         {/foreach}
         html += "<div style='float: right;' class='delButton' onclick='del{$name}(" + count{$name} + ")'></div>";
         html += "</div>";
@@ -101,7 +101,7 @@
                         {$join_field.title}
                     </td>
                     <td>
-                        <input type="text" name="filter_{$join_field_name}" id="filter_{$join_field_name}" value="" autocomplete="off"/>
+                        <input type="text" name="filter_{$join_field_name}" id="filter_{$join_field_name}" autocomplete="off" />
                     </td>
                 </tr>
 {/foreach}

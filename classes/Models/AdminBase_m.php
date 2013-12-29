@@ -5,12 +5,21 @@ class AdminBase_m extends BaseModel
 {
     protected $query = "";
 
+    /**
+     * @param $table
+     * @param string $fields
+     * @return AdminBase_m
+     */
     public function select($table, $fields = '*') {
         $this->query = "select $fields from $table";
 
         return $this;
     }
 
+    /**
+     * @param $condition
+     * @return AdminBase_m
+     */
     public function where($condition) {
         if (strpos($this->query, 'WHERE') !== false) {
             $this->query .= " AND $condition";
@@ -21,30 +30,52 @@ class AdminBase_m extends BaseModel
         return $this;
     }
 
+    /**
+     * @param $join
+     * @return AdminBase_m
+     */
     public function join($join) {
         $this->query .= " JOIN $join";
 
         return $this;
     }
 
+    /**
+     * @param $join
+     * @return AdminBase_m
+     */
     public function rightJoin($join) {
         $this->query .= " RIGHT JOIN $join";
 
         return $this;
     }
 
+    /**
+     * @param $join
+     * @return AdminBase_m
+     */
     public function leftJoin($join) {
         $this->query .= " LEFT JOIN $join";
 
         return $this;
     }
 
+    /**
+     * @param $l1
+     * @param null $l2
+     * @return AdminBase_m
+     */
     public function limit($l1, $l2 = null) {
         $this->query .= is_null($l2) ? " LIMIT $l1" : " LIMIT $l1, $l2";
 
         return $this;
     }
 
+    /**
+     * @param $field
+     * @param bool $asc
+     * @return AdminBase_m
+     */
     public function orderBy($field, $asc = true) {
         if ($asc) {
             $this->query .= " ORDER BY $field ASC";
@@ -55,14 +86,47 @@ class AdminBase_m extends BaseModel
         return $this;
     }
 
+    /**
+     * @param $by
+     * @return AdminBase_m
+     */
     public function groupBy($by) {
         $this->query .= " GROUP BY $by";
 
         return $this;
     }
 
+    /**
+     * @param $field
+     * @return AdminBase_m
+     */
     public function orderByNoDirection($field) {
         $this->query .= " ORDER BY $field";
+
+        return $this;
+    }
+
+    public $union = '';
+
+    /**
+     * @return AdminBase_m
+     */
+    public function union() {
+        $this->union .= '(' . $this->query . ') UNION ';
+        $this->query = '';
+
+        return $this;
+    }
+
+    /**
+     * @return AdminBase_m
+     */
+    public function closeUnion() {
+        if (!empty($this->union)) {
+            $this->query = $this->union . '(' . $this->query . ')';
+        }
+
+        $this->union = '';
 
         return $this;
     }
@@ -76,6 +140,10 @@ class AdminBase_m extends BaseModel
     }
 
     public function fetchAll($identity = null) {
+        if (!empty($this->union)) {
+            $this->query = $this->union . '(' . $this->query . ')';
+        }
+
         if(defined('DEBUG') && !defined('STOP_DEBUG')) {
             echo $this->query . "<br/>";
         }

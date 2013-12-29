@@ -42,7 +42,7 @@ class Main_c extends BaseAppController
 		  $ids = $this->_cart->getCart();
 		  $idsArray = array();
 		  foreach ($ids as $key => $value) {
-		  	$idsArray[] = array ('id' => $key, 'count' => $value['c']);
+		  	$idsArray[] = array ('id' => $key, 'count' => $value['c'], 'price' => $value['p']);
 		  }
 		  $this->_cart->showResult($idsArray);
 		}
@@ -61,7 +61,7 @@ class Main_c extends BaseAppController
         $this->loadCartProducts();
 		// $this->assignValues('app/show-cart.tpl', $uniquePageValue);
 		// $this->assignProductPaths($this->_cart->getObject());
-		
+
         $this->assign('content_page', 'cart');
 		
 		parent::display($uniquePageValue);

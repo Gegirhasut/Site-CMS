@@ -7,7 +7,7 @@
             {if !isset($field.nolist)}
                 <td align="middle" {if $field.type eq 'sort'}class="sort_field"{/if}>
                     {if $field.type eq 'link'}
-                        <a href="javascript:open_window('/admin/add-update/{$class}/{$product[$fields.identity]}',1000,800);">{$product[$f_name]}</a>
+                        <a href="javascript:open_window('/admin/add-update/{$class}/{$product[$identity]}',1000,800);">{$product[$f_name]}</a>
                     {elseif $field.type eq 'checkbox'}
                         {if $product[$f_name] eq '1'}
                             Да
@@ -26,9 +26,6 @@
                         {/if}
                     {elseif $field.type eq 'textarea'}
                         {$product[$f_name]}
-                    {elseif $fields.sort eq $f_name}
-                        <a href="?operation=up&id={$product[$fields.identity]}" title="Вверх"><img src="/images/icons/up.png" alt="Вверх" border="0" width="12px"></a>
-                        <a href="?operation=down&id={$product[$fields.identity]}" title="Вниз"><img src="/images/icons/down.png" alt="Вниз" border="0" width="12px"></a>
                     {elseif $field.type eq 'word'}
                         {$product[$f_name]|strip_tags|substr:0:100} ...
                     {else}

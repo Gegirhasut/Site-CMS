@@ -132,20 +132,12 @@ class AdminBase_m extends BaseModel
     }
 
     public function execute() {
-        if(defined('DEBUG') && !defined('STOP_DEBUG')) {
-            echo $this->query . "<br/>";
-        }
-
         $this->executeQuery($this->query);
     }
 
     public function fetchAll($identity = null) {
         if (!empty($this->union)) {
             $this->query = $this->union . '(' . $this->query . ')';
-        }
-
-        if(defined('DEBUG') && !defined('STOP_DEBUG')) {
-            echo $this->query . "<br/>";
         }
 
         $rows = parent::fetchAll($this->query, $identity);
@@ -193,10 +185,6 @@ class AdminBase_m extends BaseModel
 
         $this->query = "insert $ignore into {$object->table} $fieldsValue values $values";
 
-        if(defined('DEBUG') && !defined('STOP_DEBUG')) {
-            echo $this->query . "<br/>";
-        }
-
         $this->executeQuery($this->query);
 
         $id = $this->getInsertedId();
@@ -213,10 +201,6 @@ class AdminBase_m extends BaseModel
         $updateFields = $this->_getUpdateSqls($object, $sets, $identity);
 
         $this->query = "update {$object->table} $sets $identity";
-
-        if(defined('DEBUG') && !defined('STOP_DEBUG')) {
-            echo $this->query . "<br/>";
-        }
 
         $this->executeQuery($this->query);
 

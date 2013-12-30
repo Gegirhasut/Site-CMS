@@ -31,6 +31,10 @@ class BaseModel
 
   function executeQuery($query)
   {
+      if(defined('DEBUG') && !defined('STOP_DEBUG')) {
+          echo $query . "<br/>";
+      }
+
       $db_connect = Database::connectToDatabase();
       $result = mysql_query($query, $db_connect);
       if (!$result) {
@@ -39,7 +43,7 @@ class BaseModel
       	  	if ($_SERVER['SERVER_NAME'] == 'localhost') {
           		echo '<b>Could not run query:</b> ' . $query . '<br/><b>Error message</b>: ' . $mysql_error;
       	  	} else {
-          		mail('max077@mail.ru', '[arktida] SQL error', $query . print_r($_SERVER, true) . print_r(debug_backtrace(), true) . print_r($_COOKIE, true) );
+          		mail('max077@mail.ru', '[afrodita new] SQL error', $query . "<br>" . $mysql_error . "<br>" . print_r($_SERVER, true) . print_r(debug_backtrace(), true) . print_r($_COOKIE, true) );
       	  	}
       	  }
     	  return false;
@@ -54,7 +58,7 @@ class BaseModel
     $result = $this->executeQuery($query);
     $time2 = time();
     $dtime = $time2 - $time1;
-    //echo "$query, time = $dtime<br/>";
+    echo "$query, time = $dtime<br/>";
     if ($result === false) {
 //      echo 'Could not run query: ' . $query . mysql_error();
       exit;

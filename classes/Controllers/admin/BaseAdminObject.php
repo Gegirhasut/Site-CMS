@@ -13,11 +13,25 @@ class BaseAdminObject extends BaseAdminSecurity
         $this->class = $this->loadClass(Router::getUrlPart(3), true);
     }
 
-    protected function executeHooks() {
+    protected function executeHooksAfter($operation = '*') {
 
-        if (isset($this->class->hooks['after_insert'])) {
-            $hook = $this->class->hooks['after_insert'];
-            $this->class->{$hook}($this->_adminModel);
+        if (isset($this->class->hooks['after'])) {
+            foreach ($this->class->hooks['after'] as $hookName => $hook) {
+                if ($operation == '*' || $hookName == $operation) {
+                    $this->class->{$hook}($this->_adminModel, $this->class);
+                }
+            }
+        }
+    }
+
+    protected function executeHooksBefore($operation = '*') {
+
+        if (isset($this->class->hooks['before'])) {
+            foreach ($this->class->hooks['before'] as $hookName => $hook) {
+                if ($operation == '*' || $hookName == $operation) {
+                    $this->class->{$hook}($this->_adminModel, $this->class);
+                }
+            }
         }
     }
 
@@ -27,6 +41,10 @@ class BaseAdminObject extends BaseAdminSecurity
         $subValues = $this->ParsePost($this->class->fields);
 
         $this->_adminModel = $this->_getModelByName('AdminBase');
+
+        if (isset($this->class->hooks)) {
+            $this->executeHooksBefore();
+        }
         
         if ($operation == 'update') {
         	$this->_adminModel->update($this->class);
@@ -41,7 +59,7 @@ class BaseAdminObject extends BaseAdminSecurity
         }
 
         if (isset($this->class->hooks)) {
-            $this->executeHooks();
+            $this->executeHooksAfter();
         }
 
         if (isset($id)) {

@@ -71,6 +71,8 @@ class BaseAdminObjects extends BaseAdminSecurity
           if ((isset($this->class->group) && !empty($_POST[$this->class->group])) || !isset($this->class->group)) {
             $this->_adminModel->orderBy($this->class->sort);
           }
+      } elseif (isset($this->class->admin_sort_field)) {
+          $this->_adminModel->orderBy($this->class->admin_sort_field, false);
       }
 
       $objects = $this->_adminModel
